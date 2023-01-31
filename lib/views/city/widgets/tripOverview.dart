@@ -17,7 +17,13 @@ class TripOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final orientation = MediaQuery.of(context).orientation;
     return Container(
+      // pour gerer la largeur du widget avec l'affichage en landscape.
+      //double.infinity -> permet de prendre tout l'espace disponible en mode portrait(affichage en longueur)
+      //                -> on pouvait le remplacer par size.width -> pour prendre toute la largeur
+        width: orientation == Orientation.landscape ? size.width * 0.5 : double.infinity,
         padding: EdgeInsets.all(5.0),
         height: 200.0,
         color: Colors.white,

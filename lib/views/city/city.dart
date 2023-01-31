@@ -2,19 +2,35 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/modeles/Activity.modele.dart';
-import 'package:flutter_app/data/data.dart' as data;
+
 import 'package:flutter_app/modeles/Trip.modele.dart';
 import 'package:flutter_app/views/city/widgets/activity_card.dart';
 import 'package:flutter_app/views/city/widgets/activity_list.dart';
 import 'package:flutter_app/views/city/widgets/tripOverview.dart';
 import 'package:flutter_app/views/city/widgets/trip_activity_list.dart';
+import 'package:flutter_app/widget_utils/DataWidget.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_app/data/data.dart' as data;
 
 
 class City extends StatefulWidget {
   //la liste des activités n'est pas appelé à etre modifié puisqu'il est installé en dur
   //tout ce qui est déclaré dans une classe widget est imutable
- final List<Activity> activities = data.activities;
+  //List<Activity> activities = data.activities;
+
+   showContent({BuildContext context, List<Widget> children}) {
+    //Ici On recupere l'orientation de l'écran à l'instant t (landscape -> sur la largeur, portrait -> sur la longueur
+    //  -> grace à l'inheritidet natif MediaQuery
+    final orientation = MediaQuery.of(context).orientation;
+    if(orientation == Orientation.landscape){
+     return Row(
+       //on veut que notre Row() prend toute la hauteur  disponible
+       crossAxisAlignment: CrossAxisAlignment.stretch,
+       children: children,);
+    }else{
+     return Column(children: children,);
+    }
+  }
 
   @override
   _CityState createState() => _CityState();
@@ -22,6 +38,7 @@ class City extends StatefulWidget {
 
 class _CityState extends State<City> {
 
+  List<Activity> activities;
   Trip myTrip;
   int index;
 
@@ -34,6 +51,18 @@ class _CityState extends State<City> {
     index = 0;
   }
 
+  //permet d'écouter les changement du widget parent
+  // -> entraine un rebuild du widget s'il ya modification du parent
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    //on fait appel à la méthode static of() de l'inheritWidget DataWidget
+    // of() return context.dependOnInheritedWidgetOfExactType<DataWidget>() -> qui permet d'acceder aux données dans l'inheritWidget DataWidget
+    activities = DataWidget.of(context).activities;
+
+  }
+
   //permet  de mettre à jour l'idex du widget sur le quel on a tapé
   void switchIndex(newIndex){
     setState(() {
@@ -41,11 +70,30 @@ class _CityState extends State<City> {
     });
   }
 
+  //permet d'ajouter ou d'enlever une activité dans la liste des activité séléctionné
   void toggleActivity(String id) {
     setState(() {
+      //si l'id de l'activité est présent nous allons le supprimé quand on tape dessus
+      //sinon on l'ajoute
       myTrip.activities.contains(id) ?
           myTrip.activities.remove(id) :
           myTrip.activities.add(id);
+    });
+    print(myTrip.activities);
+  }
+
+  // nous fournit la liste des activités séléctionnées(cochées);
+  //where() -> nous permet de cibler les activuités dont les id sont présent dans le tableaux myTrip.activities
+  //        -> return un itterable -> converti en list(toList)
+  List<Activity> get getSelectedActivities {
+    return activities.where((activity){
+      return myTrip.activities.contains(activity.id);
+    }).toList();
+  }
+
+  void deleteActivity(String id){
+    setState(() {
+      myTrip.activities.remove(id);
     });
   }
 
@@ -79,6 +127,9 @@ class _CityState extends State<City> {
 
   @override
   Widget build(BuildContext context) {
+    //on peut aussi commme pour didChangeDependencies() acceder aux données de notre inheritedWidget DataWidget
+    //  -> directement dans notre méthode build -> on a acces au context
+    //activities = DataWidget.of(context).activities;
     return Scaffold(
       appBar: AppBar(
         title: Text("Organisation de voyage"),
@@ -86,23 +137,22 @@ class _CityState extends State<City> {
         actions: [Icon(Icons.more_vert)],
       ),
       body: Container(
-        //ListView() va permettre de scroller quand on a un nombre d'élément qui dépasse l'écran
-        //   -> contrairement au column
-        //   -> mais pas très performant lorsque l'on a un grand nombre d'éléments
-        child: Column(
-          children: [
-            TripOverview(setDate: setDate, trip: myTrip,),
-            //on wrap le Gridview.builder() -> pour qu'il prenne tout l'espace restant disponible
-            // -> sinon il va vouloir prendre tout l'espace du widget parent et proqué un bug
-            Expanded(
-              child: index == 0
-                  ? ActivityList(activities: widget.activities,
-                                toggleActivity: toggleActivity)
-                  : TripActivityList(),
-            )
-
-          ],
-        )
+        //widget -> parceque notre méthode est placée dans la classe widget
+        child: widget.showContent(
+            context: context,
+            children: [
+              TripOverview(setDate: setDate, trip: myTrip,),
+              //on wrap le Gridview.builder() -> pour qu'il prenne tout l'espace restant disponible
+              // -> sinon il va vouloir prendre tout l'espace du widget parent et proqué un bug
+              Expanded(
+                child: index == 0
+                    ? ActivityList(activities: activities,
+                    toggleActivity: toggleActivity,
+                    selectedActivities: myTrip.activities)
+                    : TripActivityList(selectedActivities: getSelectedActivities,
+                    deleteActivity: deleteActivity),
+              )
+            ] ),
 
 
       ),
