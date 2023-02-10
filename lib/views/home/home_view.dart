@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/modeles/City_modele.dart';
 import 'package:flutter_app/views/home/widgets/city_card.dart';
 
 
 
-class Home extends StatefulWidget {
+class HomeView extends StatefulWidget {
 
   @override
-  _HomeState createState() => _HomeState();
+  _HomeViewState createState() => _HomeViewState();
 }
 
 // Les donnée vont se gerer dans la classe d'etat
-class _HomeState extends State<Home> {
+class _HomeViewState extends State<HomeView> {
 
   List cities = [
-    { "name": "Paris", "image": "assets/Paris.jpg", "checked": false},
-    { "name": "Lyon", "image": "assets/lyon.jpg", "checked": false},
-    { "name": "Nice", "image": "assets/Nice.jpg", "checked": false},
+   City(name: "Paris", image: "assets/Paris.jpg"),
+   City(name: "Lyon", image: "assets/lyon.jpg"),
+   City(name: "Nice", image: "assets/Nice.jpg")
   ];
 
-  void  switchCheck(city) {
-    int index = cities.indexOf(city);
-    setState(() {
-      cities[index]["checked"] = !cities[index]["checked"];
-    });
-
-  }
 
   // Dans le cas d'un statefullwidget -> la méthode build se trouve dans
   //la classe d'etat
@@ -43,7 +37,7 @@ class _HomeState extends State<Home> {
           children: [
             //map() -> retourne un array de widget City -> on utilise l'operateur spreed pour acceder aux widget
             ...cities.map((city){
-             return City_card(name: city["name"], image: city["image"], isChecked: city["checked"], updateCheck: () => switchCheck(city),);
+             return City_card(city : city);
             })
             //il faut fournir un container au card pour pouvoir lui fournir les dimension voulues
            ,

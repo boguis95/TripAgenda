@@ -2,7 +2,7 @@
 //                -> aux  widgets enfants
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/modeles/Activity.modele.dart';
+import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/data/data.dart' as data;
 
 class DataWidget extends InheritedWidget {

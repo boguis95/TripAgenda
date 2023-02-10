@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/modeles/City_modele.dart';
+import 'package:flutter_app/views/city/city_view.dart';
 
 class City_card extends StatelessWidget {
 
   //on utilise final et pas const -> parcequ'on va les instancieer au moment de l'invocation du constructeur
-  final String name;
-  final String image;
-  final bool isChecked;
-  final Function updateCheck;
+ final City city;
 
-  const City_card({ this.name, this.image, this.isChecked, this.updateCheck}) ;
+  const City_card({ this.city}) ;
 
 
   @override
@@ -35,40 +34,37 @@ class City_card extends StatelessWidget {
               fit: BoxFit.cover,
               image: AssetImage(
             // on lui passe directement la propriété image -> qui prendra sa valeur(passé au contructor)lors de l'utilisation du widget
-                image
+                city.image
               ),
               child: InkWell(
                 onTap: () => {
-                  updateCheck()
+                  //Navigator.pushNamed() -> permet de faire une redirection
+                  //                      -> on lui précise le context et le nom de la route défini dans le widget principal
+                  Navigator.pushNamed(
+                      context,
+                      '/city',
+                       //arguments: permet de gerer les parametres -> pour afficher la page avec les données correctes
+                      //          -> prend un objet
+                       //         -> ici on lui fourni l'instance de City en cours -> du city_card sur le quel on clique
+                      //                                                           -> pour récuperer les données à afficher selon la ville
+                       arguments: city)
                 },
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child:  Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          isChecked ? Icons.star_border : Icons.star ,
-                          color: Colors.white,
-                          size: 40.0,)
-                      ],
-                    ),
-                  )
+           //Positioned() -> permet de positionner nos éléments dans un endroit précis
+            //            -> ici l'élément à positionner est notre container
+           Positioned(
+             left: 10.0,
+             top: 5.0,
+             child: Container(
+               color: Colors.black45,
+               padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+               child: Text(city.name,
+               style: TextStyle(fontSize: 25.0, color: Colors.white),),
+             ),
 
-                  ,Row(
-                    children: [
-                      Text(name,
-                        style: TextStyle(fontSize: 40.0, color: Colors.white),)
-                    ],
-                  )
-                ],
-              ),
-            )
+
+           )
           ],
         ),
       ),

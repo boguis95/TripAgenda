@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_app/modeles/Activity.modele.dart';
+import 'package:flutter_app/modeles/Activity_modele.dart';
 
 import 'activity_card.dart';
 

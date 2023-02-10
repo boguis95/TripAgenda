@@ -1,9 +1,10 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/modeles/Activity.modele.dart';
+import 'package:flutter_app/modeles/Activity_modele.dart';
+import 'package:flutter_app/modeles/City_modele.dart';
 
-import 'package:flutter_app/modeles/Trip.modele.dart';
+import 'package:flutter_app/modeles/Trip_modele.dart';
 import 'package:flutter_app/views/city/widgets/activity_card.dart';
 import 'package:flutter_app/views/city/widgets/activity_list.dart';
 import 'package:flutter_app/views/city/widgets/tripOverview.dart';
@@ -13,10 +14,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter_app/data/data.dart' as data;
 
 
-class City extends StatefulWidget {
+class CityView extends StatefulWidget {
   //la liste des activités n'est pas appelé à etre modifié puisqu'il est installé en dur
   //tout ce qui est déclaré dans une classe widget est imutable
-  //List<Activity> activities = data.activities;
+  List<Activity> activities = data.activities;
 
    showContent({BuildContext context, List<Widget> children}) {
     //Ici On recupere l'orientation de l'écran à l'instant t (landscape -> sur la largeur, portrait -> sur la longueur
@@ -33,12 +34,12 @@ class City extends StatefulWidget {
   }
 
   @override
-  _CityState createState() => _CityState();
+  _CityViewState createState() => _CityViewState();
 }
 
-class _CityState extends State<City> {
+class _CityViewState extends State<CityView> {
 
-  List<Activity> activities;
+  //List<Activity> activities;
   Trip myTrip;
   int index;
 
@@ -51,7 +52,8 @@ class _CityState extends State<City> {
     index = 0;
   }
 
-  //permet d'écouter les changement du widget parent
+  //permet d'écouter les changement des donné du widget parent(inherited widget)
+  //les changement lui sont notifié par la méthode updateShouldNotify() de l'inheritedWidget
   // -> entraine un rebuild du widget s'il ya modification du parent
   @override
   void didChangeDependencies() {
@@ -59,8 +61,21 @@ class _CityState extends State<City> {
     super.didChangeDependencies();
     //on fait appel à la méthode static of() de l'inheritWidget DataWidget
     // of() return context.dependOnInheritedWidgetOfExactType<DataWidget>() -> qui permet d'acceder aux données dans l'inheritWidget DataWidget
-    activities = DataWidget.of(context).activities;
+    //activities = DataWidget.of(context).activities;
 
+  }
+
+  double get amount {
+    //fold -> nous permet d'incrémenter une valeur initialement fournit
+    //0.0 -> valeur initiale
+    //previously -> valeur précedant
+    //firtWhere() -> l'incrémentation se fera si l'activité en question verifie la condition
+    //               -> si son id est présent dans la lites des id des activités séléctionnées
+    return myTrip.activities.fold(0.0, (previousValue, element){
+    Activity activity = widget.activities.firstWhere((activity) => activity.id == element);
+    //reviousValue + activity.price -> donnera une nouvelle valeur à la valeur initiale
+    return (previousValue + activity.price);
+    });
   }
 
   //permet  de mettre à jour l'idex du widget sur le quel on a tapé
@@ -86,7 +101,7 @@ class _CityState extends State<City> {
   //where() -> nous permet de cibler les activuités dont les id sont présent dans le tableaux myTrip.activities
   //        -> return un itterable -> converti en list(toList)
   List<Activity> get getSelectedActivities {
-    return activities.where((activity){
+    return widget.activities.where((activity){
       return myTrip.activities.contains(activity.id);
     }).toList();
   }
@@ -127,13 +142,20 @@ class _CityState extends State<City> {
 
   @override
   Widget build(BuildContext context) {
+    //ModalRoute.of(context).settings.arguments
+    //   -> permet de recuperer l'argument passé à notre fonction de redirection dans city_card
+    final City city = ModalRoute.of(context).settings.arguments;
+    print(city);
     //on peut aussi commme pour didChangeDependencies() acceder aux données de notre inheritedWidget DataWidget
     //  -> directement dans notre méthode build -> on a acces au context
     //activities = DataWidget.of(context).activities;
     return Scaffold(
       appBar: AppBar(
         title: Text("Organisation de voyage"),
-        leading: Icon(Icons.chevron_left),
+        leading: IconButton(
+          icon: Icon(Icons.chevron_left) ,
+          //Navigator.pop() -> permet de faire un précédent
+          onPressed: () => Navigator.pop(context),),
         actions: [Icon(Icons.more_vert)],
       ),
       body: Container(
@@ -141,12 +163,12 @@ class _CityState extends State<City> {
         child: widget.showContent(
             context: context,
             children: [
-              TripOverview(setDate: setDate, trip: myTrip,),
+              TripOverview(cityName : city.name, setDate: setDate, trip: myTrip, amount: amount,),
               //on wrap le Gridview.builder() -> pour qu'il prenne tout l'espace restant disponible
               // -> sinon il va vouloir prendre tout l'espace du widget parent et proqué un bug
               Expanded(
                 child: index == 0
-                    ? ActivityList(activities: activities,
+                    ? ActivityList(activities: widget.activities,
                     toggleActivity: toggleActivity,
                     selectedActivities: myTrip.activities)
                     : TripActivityList(selectedActivities: getSelectedActivities,

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/modeles/Trip.modele.dart';
+import 'package:flutter_app/modeles/Trip_modele.dart';
 import 'package:intl/intl.dart';
 
 class TripOverview extends StatelessWidget {
@@ -8,12 +8,12 @@ class TripOverview extends StatelessWidget {
   final Function setDate;
 
   final Trip trip;
+  final String cityName;
+  final double amount;
 
-  const TripOverview({ this.setDate, this.trip}) ;
+  const TripOverview({ this.setDate, this.trip, this.cityName, this.amount}) ;
 
-  double get amount {
-    return 0;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,8 @@ class TripOverview extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Paris",
+              // on affiche le nom de la ville sur la quelle on a cliqué dans la liste des ville
+              cityName,
               style: TextStyle(
                   fontSize: 25.0, decoration: TextDecoration.underline
               ),
