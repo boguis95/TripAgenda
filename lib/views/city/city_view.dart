@@ -10,14 +10,27 @@ import 'package:flutter_app/views/city/widgets/activity_list.dart';
 import 'package:flutter_app/views/city/widgets/tripOverview.dart';
 import 'package:flutter_app/views/city/widgets/trip_activity_list.dart';
 import 'package:flutter_app/widget_utils/DataWidget.dart';
+import 'package:flutter_app/widget_utils/MyDrawer.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_app/data/data.dart' as data;
 
 
+
+// ignore: must_be_immutable
 class CityView extends StatefulWidget {
+
+  final City city;
+  final Function addTrip;
   //la liste des activités n'est pas appelé à etre modifié puisqu'il est installé en dur
   //tout ce qui est déclaré dans une classe widget est imutable
-  List<Activity> activities = data.activities;
+
+  static const String routeName = "/city";
+
+   CityView({ this.city, this.addTrip}) ;
+
+   List<Activity> get activities {
+     return city.activities;
+   }
+
 
    showContent({BuildContext context, List<Widget> children}) {
     //Ici On recupere l'orientation de l'écran à l'instant t (landscape -> sur la largeur, portrait -> sur la longueur
@@ -43,12 +56,14 @@ class _CityViewState extends State<CityView> {
   Trip myTrip;
   int index;
 
+
+
   //initState permet d'initialiser notre state
   //fourni les données initiales qui pourront etre mis à jour avec setState()
   @override
   void initState() {
     super.initState();
-    myTrip = Trip(city: "Paris", activities:[], date: null);
+    myTrip = Trip(city: "", activities:[], date: null);
     index = 0;
   }
 
@@ -71,10 +86,15 @@ class _CityViewState extends State<CityView> {
     //previously -> valeur précedant
     //firtWhere() -> l'incrémentation se fera si l'activité en question verifie la condition
     //               -> si son id est présent dans la lites des id des activités séléctionnées
+    //            -> on a également une décrémentation quand la condition n'est plus verifié
     return myTrip.activities.fold(0.0, (previousValue, element){
-    Activity activity = widget.activities.firstWhere((activity) => activity.id == element);
+    Activity activity = widget.activities.firstWhere((activity) => activity == element);
+
     //reviousValue + activity.price -> donnera une nouvelle valeur à la valeur initiale
+    //on retourne la valeur la plus récente
+    //print(previousValue + activity.price);
     return (previousValue + activity.price);
+
     });
   }
 
@@ -85,30 +105,34 @@ class _CityViewState extends State<CityView> {
     });
   }
 
+  void setCityName(){
+    setState(() {
+      myTrip.city = widget.city.name ;
+    });
+  }
+
   //permet d'ajouter ou d'enlever une activité dans la liste des activité séléctionné
-  void toggleActivity(String id) {
+  void toggleActivity(Activity activity) {
     setState(() {
       //si l'id de l'activité est présent nous allons le supprimé quand on tape dessus
       //sinon on l'ajoute
-      myTrip.activities.contains(id) ?
-          myTrip.activities.remove(id) :
-          myTrip.activities.add(id);
+      myTrip.activities.contains(activity) ?
+          myTrip.activities.remove(activity) :
+          myTrip.activities.add(activity);
     });
-    print(myTrip.activities);
+   // print(myTrip.activities);
   }
 
   // nous fournit la liste des activités séléctionnées(cochées);
   //where() -> nous permet de cibler les activuités dont les id sont présent dans le tableaux myTrip.activities
   //        -> return un itterable -> converti en list(toList)
   List<Activity> get getSelectedActivities {
-    return widget.activities.where((activity){
-      return myTrip.activities.contains(activity.id);
-    }).toList();
+    return widget.activities;
   }
 
-  void deleteActivity(String id){
+  void deleteActivity(Activity activity){
     setState(() {
-      myTrip.activities.remove(id);
+      myTrip.activities.remove(activity);
     });
   }
 
@@ -137,6 +161,73 @@ class _CityViewState extends State<CityView> {
 
   }
 
+  void saveDialog() async {
+    //showDialog() ->methode qui permet de creer des fenetre de dialogue(ou pop up ou modal)
+    //             -> positionne ce dernier en haut du stack du fenetre de navigation
+    //             -> return un Future(promesse) -> qui est le résultat de la réponse -> enregistrer avec le Naviagator.pop()
+    final String result = await showDialog(
+        context: context,
+        builder: (context) {
+          //SimpleDialog() -> widget qui permet de mettre en place un pop up
+          return SimpleDialog(
+            title: Text("Voulez vous enregistrer ?"),
+            contentPadding: EdgeInsets.all(20.0),
+            //permte de créer un bordure et de la personnaliser
+            shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  color: Colors.black45,
+                  width: 1.0
+                ),
+                borderRadius: BorderRadius.circular(10)),
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  RaisedButton(
+                    child: Text("Sauvegarder"),
+                    color: Theme
+                        .of(context)
+                        .primaryColor,
+                    //Navigator.pop() -> ferme la fenetre et retourne  la réponse comme  promesse -> qui sera retourné par showDialog()
+                    onPressed: () => Navigator.pop(context, "save"),
+
+                  ),
+                  RaisedButton(
+                    child: Text("Annuler"),
+                    color: Colors.red,
+                    onPressed: () => Navigator.pop(context, "annuler"),
+                  )
+                ],
+              )
+            ],
+          );
+        });
+    //print(result);
+    if(result == "save"){
+      if(myTrip.date == null) {
+        showDialog(
+            context: context,
+            builder: (context){
+              return AlertDialog(
+                title: Text("attention !"),
+                titleTextStyle: TextStyle(color: Colors.red[900], fontSize: 20.0),
+                content: Text("Vous n'avez pas choisi une date "),
+                actions: [
+                  FlatButton(
+                      child: Text("OK", style: TextStyle(fontSize: 15.0),),
+                      onPressed:()=> Navigator.pop(context))],
+              );
+            }
+        );
+      }else{
+      setCityName();
+      widget.addTrip(myTrip);
+      Navigator.pushNamed(context, "/");
+    }
+    }
+
+  }
+
   //getter qui permet de récuperer le prix d'une activité séléctionner
 
 
@@ -144,26 +235,24 @@ class _CityViewState extends State<CityView> {
   Widget build(BuildContext context) {
     //ModalRoute.of(context).settings.arguments
     //   -> permet de recuperer l'argument passé à notre fonction de redirection dans city_card
-    final City city = ModalRoute.of(context).settings.arguments;
-    print(city);
+    //final City city = ModalRoute.of(context).settings.arguments;
+   // print(city);
     //on peut aussi commme pour didChangeDependencies() acceder aux données de notre inheritedWidget DataWidget
     //  -> directement dans notre méthode build -> on a acces au context
     //activities = DataWidget.of(context).activities;
     return Scaffold(
       appBar: AppBar(
+
         title: Text("Organisation de voyage"),
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left) ,
-          //Navigator.pop() -> permet de faire un précédent
-          onPressed: () => Navigator.pop(context),),
         actions: [Icon(Icons.more_vert)],
       ),
+      drawer: MyDrawer(),
       body: Container(
         //widget -> parceque notre méthode est placée dans la classe widget
         child: widget.showContent(
             context: context,
             children: [
-              TripOverview(cityName : city.name, setDate: setDate, trip: myTrip, amount: amount,),
+              TripOverview(cityName : widget.city.name, setDate: setDate, trip: myTrip, amount: amount,),
               //on wrap le Gridview.builder() -> pour qu'il prenne tout l'espace restant disponible
               // -> sinon il va vouloir prendre tout l'espace du widget parent et proqué un bug
               Expanded(
@@ -177,6 +266,11 @@ class _CityViewState extends State<CityView> {
             ] ),
 
 
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.forward),
+        //fait appel à la fonction saveDialog()
+        onPressed: saveDialog,
       ),
       bottomNavigationBar: BottomNavigationBar(
         //l'index de l'item acctuel

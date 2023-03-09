@@ -1,6 +1,6 @@
 //InheritedWidget -> qui permet de faire passer de la data grace à l'utilisation du context
 //                -> aux  widgets enfants
-
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/data/data.dart' as data;
@@ -26,5 +26,7 @@ class DataWidget extends InheritedWidget {
   @override
   bool updateShouldNotify(DataWidget old) {
     return true;
-  }
+
 }
+
+ */

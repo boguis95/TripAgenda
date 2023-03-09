@@ -7,13 +7,14 @@ class ActivityList extends StatelessWidget {
  final List<Activity> activities;
  final Function toggleActivity;
  //ne contient que les id des activités séléctionnées qui sont des string
- final List<String> selectedActivities;
+ final List<Activity> selectedActivities;
 
   const ActivityList({ this.activities, this.toggleActivity, this.selectedActivities}) ;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+
 
       //construit les éléments que lorsqu'ils apparaissent à l'écran et les détruisent lorsqu'ils n'apparaissent plus
       // ->ListView.builder() plus performant que Lisview()
@@ -22,11 +23,11 @@ class ActivityList extends StatelessWidget {
       //                                                 -> séparant les items
       // separatorBuilder -> prend une fonction idéntique à celle de itemBuilder et retourne le séparateur( Divider() ou un SizedBox())
       itemBuilder: (context, index){
-        return Activity_card(activity: activities[index],
+        return ActivityCard(activity: activities[index],
                              //activities[index].id -> id de l'activity sur le quel on est placé
-                             isSelected: selectedActivities.contains(activities[index].id),
+                             isSelected: selectedActivities.contains(activities[index]),
                              toggleActivity: () {
-                              toggleActivity(activities[index].id);
+                              toggleActivity(activities[index]);
                              });
       },
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
