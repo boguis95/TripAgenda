@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/CityProvider.dart';
+import 'package:flutter_app/providers/TripProvider.dart';
 import 'package:flutter_app/views/city/city_view.dart';
 import 'package:flutter_app/views/trip/trip_view.dart';
 import 'package:flutter_app/views/trips/trips_view.dart';
@@ -27,74 +28,40 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
- final List<Trip> trips = [];
 
- void addTrip(Trip trip) {
-   setState(() {
-     trips.add(trip);
-   });
- }
+
+
 
   @override
   Widget build(BuildContext context) {
-   //ChangeNotifierProvider -> un des objet de privider qui permet de notifier une mise à jour de données du provider au widgets qui consomment ces données
-    return ChangeNotifierProvider(
-        create: (BuildContext context){
-          return CityProvider();
-        },
-        child:   MaterialApp(
-          //ThemeData est un inheritWidget natif -> appliquer des crateistique à tout l'application
-          theme: ThemeData(
-            //primarySwatch -> permet d'appliquer aléatoirement des gradiants de la couleur à notre application
-              primarySwatch: Colors.lightGreen
-          ),
-          debugShowCheckedModeBanner: false,
-          //On enveloppe notre Widget City() par l'inheritWidget DataWidget
-          //   -> permet aux widgets enfants d'acceder au données placées dans l'inheritWidget grace au context
-          home: HomeView(),
-          /*     routes: {
-          '/city' : (context) {
-            return CityView();
-    }
-        },*/
-          //on utilise le ongerateRoute parcequ'on voudrait passer des arguments qui modifieront les voyages selon la liste de l'utilisateur
-          /*    onGenerateRoute: (settings){
-            switch(settings.name){
-              case TripsView.routeName :{
-                return MaterialPageRoute(
-                    builder: (context){
-                      return TripsView(trips: trips, cities: widget.cities,);
-                    }
-                  // ignore: missing_return, missing_return
-                );
-              }
-              case CityView.routeName : { // ignore: missing_return
-              return MaterialPageRoute(
-                  builder: (context){
-              final City city = settings.arguments;
-                  return CityView(city: city, addTrip: addTrip);
-    }
-    // ignore: missing_return, missing_return
-    );
-    }
-              case TripView.routeName : {
-                return MaterialPageRoute(
-                  builder: (context){
-                    final Trip trip = (settings.arguments as Map<String, Object>)["trip"];
-                    final City city = (settings.arguments as Map<String, Object>)["city"];
-                    return TripView(trip: trip, city: city);
-                  }
-                );
-              }
-              }
 
-            },
-*/
-          onUnknownRoute: (settings) =>  MaterialPageRoute(builder: (context) {
-            return NotFoundRoute();
-          }),
-          //home: DataWidget(child: CityView(),) ,
-        )
+   //Mutiprovider -> permet de brancher plusieurs providers
+    //ChangeNotifierProvider -> permet de notifier aux widegt qui consomme la données une mise à jour de ladonnée pour qu'ils puissent rebuild
+    //Vu qu'on utilise pas le context -> on peut directement utiliser le constructeur nommé ChangeNotifierProvider.value de ChangeNotifierProvider
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: CityProvider()),
+          ChangeNotifierProvider.value(value: TripProvider())
+        ],
+      child:  MaterialApp(
+        //ThemeData est un inheritWidget natif -> appliquer des crateistique à tout l'application
+        theme: ThemeData(
+          //primarySwatch -> permet d'appliquer aléatoirement des gradiants de la couleur à notre application
+            primarySwatch: Colors.lightGreen
+        ),
+        debugShowCheckedModeBanner: false,
+        //On enveloppe notre Widget City() par l'inheritWidget DataWidget
+        //   -> permet aux widgets enfants d'acceder au données placées dans l'inheritWidget grace au context
+        home: HomeView(),
+        routes: {
+          CityView.routeName : (context) => CityView(),
+          //on peut utiliser un _ à la place de context parcequ'on ne se sert pas de ce dernier
+          TripView.routeName : (_) => TripView(),
+          TripsView.routeName : (_) => TripsView()
+        },
+        onUnknownRoute: (settings) =>  MaterialPageRoute(builder: (context) => NotFoundRoute()),
+
+      ),
     );
 
   }

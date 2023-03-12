@@ -10,7 +10,7 @@ String image;
 String id;
 String city;
 double price;
-ActivityStatut statut;
+ActivityStatut activityStatut;
 
 
 Activity({
@@ -18,7 +18,9 @@ Activity({
   @required this.image,
   @required this.id,
   @required this.city,
-  @required this.price}) : statut = ActivityStatut.onGoig;
+  @required this.price,
+  this.activityStatut = ActivityStatut.onGoig
+ }) ;
 
 //En Dart pas besoin de créer le getter et setter, c'est faot implicitement
 }

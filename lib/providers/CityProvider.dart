@@ -16,4 +16,8 @@ class CityProvider with ChangeNotifier{
  UnmodifiableListView<City>  get cities {
     return UnmodifiableListView(_cities);
   }
+
+  City getCityByName (String cityName) {
+   return _cities.firstWhere((city) => city.name == cityName);
+  }
 }

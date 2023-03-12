@@ -42,12 +42,12 @@ class City_card extends StatelessWidget {
                   //                      -> on lui précise le context et le nom de la route défini dans le widget principal
                   Navigator.pushNamed(
                       context,
-                      '/city',
+                      CityView.routeName,
                        //arguments: permet de gerer les parametres -> pour afficher la page avec les données correctes
                       //          -> prend un objet
                        //         -> ici on lui fourni l'instance de City en cours -> du city_card sur le quel on clique
                       //                                                           -> pour récuperer les données à afficher selon la ville
-                       arguments: city)
+                       arguments: city.name)
                 },
               ),
             ),

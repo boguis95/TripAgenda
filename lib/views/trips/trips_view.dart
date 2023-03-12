@@ -2,24 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/data/data.dart';
 import 'package:flutter_app/modeles/City_modele.dart';
 import 'package:flutter_app/modeles/Trip_modele.dart';
+import 'package:flutter_app/providers/CityProvider.dart';
+import 'package:flutter_app/providers/TripProvider.dart';
 import 'package:flutter_app/views/trips/widgets/Trip_list.dart';
+import 'package:provider/provider.dart';
 
-class TripsView extends StatefulWidget {
-  final List<Trip> trips;
-  final List<City> cities;
+class TripsView extends StatelessWidget {
 
-  const TripsView({Key key, this.trips, this.cities}) : super(key: key);
   static const String routeName = "/trips";
 
-  @override
-  _TripsViewState createState() => _TripsViewState();
-}
 
-class _TripsViewState extends State<TripsView> {
   @override
   Widget build(BuildContext context) {
-   final List<Trip> pastTrips = widget.trips.where((trip) => trip.date.isBefore(DateTime.now())).toList();
-   final List<Trip> futureTrips = widget.trips.where((trip) => trip.date.isAfter(DateTime.now())).toList();
+   // List<Trip> trips = Provider.of<TripProvider>(context).trips;
+
+   final List<Trip> pastTrips = Provider.of<TripProvider>(context).getPastTrips();
+   final List<Trip> futureTrips = Provider.of<TripProvider>(context).getFutureTrips();
 
     return DefaultTabController(
       length: 2,
@@ -39,7 +37,7 @@ class _TripsViewState extends State<TripsView> {
           ),),
         body: TabBarView(
           children: [
-             TripList(trips: futureTrips, cities: cities),
+             TripList(trips: futureTrips),
              TripList(trips: pastTrips,)
       ],
         )

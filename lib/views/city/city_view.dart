@@ -5,6 +5,8 @@ import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/modeles/City_modele.dart';
 
 import 'package:flutter_app/modeles/Trip_modele.dart';
+import 'package:flutter_app/providers/CityProvider.dart';
+import 'package:flutter_app/providers/TripProvider.dart';
 import 'package:flutter_app/views/city/widgets/activity_card.dart';
 import 'package:flutter_app/views/city/widgets/activity_list.dart';
 import 'package:flutter_app/views/city/widgets/tripOverview.dart';
@@ -12,24 +14,22 @@ import 'package:flutter_app/views/city/widgets/trip_activity_list.dart';
 import 'package:flutter_app/widget_utils/DataWidget.dart';
 import 'package:flutter_app/widget_utils/MyDrawer.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 
 
 // ignore: must_be_immutable
 class CityView extends StatefulWidget {
 
-  final City city;
-  final Function addTrip;
+
   //la liste des activités n'est pas appelé à etre modifié puisqu'il est installé en dur
   //tout ce qui est déclaré dans une classe widget est imutable
 
   static const String routeName = "/city";
 
-   CityView({ this.city, this.addTrip}) ;
+   CityView() ;
 
-   List<Activity> get activities {
-     return city.activities;
-   }
+
 
 
    showContent({BuildContext context, List<Widget> children}) {
@@ -80,7 +80,7 @@ class _CityViewState extends State<CityView> {
 
   }
 
-  double get amount {
+  double getAmount(City city) {
     //fold -> nous permet d'incrémenter une valeur initialement fournit
     //0.0 -> valeur initiale
     //previously -> valeur précedant
@@ -88,7 +88,7 @@ class _CityViewState extends State<CityView> {
     //               -> si son id est présent dans la lites des id des activités séléctionnées
     //            -> on a également une décrémentation quand la condition n'est plus verifié
     return myTrip.activities.fold(0.0, (previousValue, element){
-    Activity activity = widget.activities.firstWhere((activity) => activity == element);
+    Activity activity = city.activities.firstWhere((activity) => activity == element);
 
     //reviousValue + activity.price -> donnera une nouvelle valeur à la valeur initiale
     //on retourne la valeur la plus récente
@@ -105,9 +105,9 @@ class _CityViewState extends State<CityView> {
     });
   }
 
-  void setCityName(){
+  void setCityName(City city){
     setState(() {
-      myTrip.city = widget.city.name ;
+      myTrip.city = city.name ;
     });
   }
 
@@ -126,8 +126,8 @@ class _CityViewState extends State<CityView> {
   // nous fournit la liste des activités séléctionnées(cochées);
   //where() -> nous permet de cibler les activuités dont les id sont présent dans le tableaux myTrip.activities
   //        -> return un itterable -> converti en list(toList)
-  List<Activity> get getSelectedActivities {
-    return widget.activities;
+  List<Activity>  getSelectedActivities(City city) {
+    return city.activities;
   }
 
   void deleteActivity(Activity activity){
@@ -161,7 +161,7 @@ class _CityViewState extends State<CityView> {
 
   }
 
-  void saveDialog() async {
+  void saveDialog(City city) async {
     //showDialog() ->methode qui permet de creer des fenetre de dialogue(ou pop up ou modal)
     //             -> positionne ce dernier en haut du stack du fenetre de navigation
     //             -> return un Future(promesse) -> qui est le résultat de la réponse -> enregistrer avec le Naviagator.pop()
@@ -220,8 +220,8 @@ class _CityViewState extends State<CityView> {
             }
         );
       }else{
-      setCityName();
-      widget.addTrip(myTrip);
+      setCityName(city);
+      Provider.of<TripProvider>(context).addTrip(myTrip);
       Navigator.pushNamed(context, "/");
     }
     }
@@ -235,7 +235,10 @@ class _CityViewState extends State<CityView> {
   Widget build(BuildContext context) {
     //ModalRoute.of(context).settings.arguments
     //   -> permet de recuperer l'argument passé à notre fonction de redirection dans city_card
-    //final City city = ModalRoute.of(context).settings.arguments;
+     String cityName = ModalRoute.of(context).settings.arguments;
+    // getCityByName() ->
+     City city = Provider.of<CityProvider>(context).getCityByName(cityName);
+
    // print(city);
     //on peut aussi commme pour didChangeDependencies() acceder aux données de notre inheritedWidget DataWidget
     //  -> directement dans notre méthode build -> on a acces au context
@@ -252,15 +255,15 @@ class _CityViewState extends State<CityView> {
         child: widget.showContent(
             context: context,
             children: [
-              TripOverview(cityName : widget.city.name, setDate: setDate, trip: myTrip, amount: amount,),
+              TripOverview(cityName : city.name, setDate: setDate, trip: myTrip, amount: getAmount(city),),
               //on wrap le Gridview.builder() -> pour qu'il prenne tout l'espace restant disponible
               // -> sinon il va vouloir prendre tout l'espace du widget parent et proqué un bug
               Expanded(
                 child: index == 0
-                    ? ActivityList(activities: widget.activities,
+                    ? ActivityList(activities: city.activities,
                     toggleActivity: toggleActivity,
                     selectedActivities: myTrip.activities)
-                    : TripActivityList(selectedActivities: getSelectedActivities,
+                    : TripActivityList(selectedActivities: getSelectedActivities(city),
                     deleteActivity: deleteActivity),
               )
             ] ),
@@ -270,7 +273,7 @@ class _CityViewState extends State<CityView> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.forward),
         //fait appel à la fonction saveDialog()
-        onPressed: saveDialog,
+        onPressed:() => saveDialog(city),
       ),
       bottomNavigationBar: BottomNavigationBar(
         //l'index de l'item acctuel
