@@ -13,4 +13,16 @@ class Trip {
     @required  this.city,
     @required  this.activities,
     this.date});
+
+/*  Trip.fromJson(Map<String, dynamic> json)
+      : city = json['city'],
+        activities = json['activities'],
+        date = json['date'];
+
+  Map<String, dynamic> toJson() =>
+      {
+        'city': city,
+        'activities': activities,
+        'date': date,
+      };*/
 }

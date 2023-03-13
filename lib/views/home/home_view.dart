@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/modeles/City_modele.dart';
 import 'package:flutter_app/providers/CityProvider.dart';
+import 'package:flutter_app/servicies/Authenytication.dart';
 import 'package:flutter_app/views/home/widgets/city_card.dart';
 import 'package:flutter_app/widget_utils/MyDrawer.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,10 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
        // leading: Icon(Icons.home),
         title: Text("Boguis App"),
-        actions: [Icon(Icons.more_vert)],
+        actions: [IconButton(
+           icon: Icon(Icons.logout),
+          onPressed: () async => await AuthenticationService().signOut(),
+        )],
       ),
       drawer: MyDrawer(),
       body: Container(

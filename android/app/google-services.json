@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "500389574103",
+    "project_id": "triplan-5aa92",
+    "storage_bucket": "triplan-5aa92.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500389574103:android:715bcc05cf6bca906e8792",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "500389574103-p496643ggv6thuuq1jtntnk2g52lb9ni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj3XFl4wE1FU1WLqFBR25QCfvjF_jQ7B8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "500389574103-p496643ggv6thuuq1jtntnk2g52lb9ni.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

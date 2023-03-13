@@ -1,6 +1,7 @@
 
  import 'dart:collection';
 
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/modeles/Trip_modele.dart';
@@ -15,7 +16,8 @@ class TripProvider with ChangeNotifier {
 
  //permet d'ajouter un trip à notre liste de trip
  //notifyListerners() -> permet de notifier aux widgets qui consomme la donnée l'ajout d'un nouveau trip -> la mise à jour de la liste
- void addTrip(Trip trip) {
+ void addTrip(Trip trip)  {
+  // db.collection("trips").add(trip as Map<String, dynamic> ).then((value) => null);
    trips.add(trip);
    notifyListeners();
  }
