@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/modeles/Activity_modele.dart';
+import 'package:flutter_app/modeles/Trip_modele.dart';
 import 'package:flutter_app/providers/TripProvider.dart';
 import 'package:provider/provider.dart';
 
 class TripActivitiesList extends StatefulWidget {
-  final List<Activity> activities;
-  final ActivityStatut filter;
+   List<Activity> activities;
+   ActivityIdStatut filter;
+   Trip trip;
+   Function setActivityToDown;
 
-  TripActivitiesList({Key key, this.activities, this.filter}) : super(key: key);
+  TripActivitiesList({Key key, this.activities, this.filter, this.trip, this.setActivityToDown}) : super(key: key);
   @override
   _TripActivitiesListState createState() => _TripActivitiesListState();
 }
@@ -15,18 +18,26 @@ class TripActivitiesList extends StatefulWidget {
 
 
 class _TripActivitiesListState extends State<TripActivitiesList> {
+  Trip trip;
 
-  void setActivityToDown(Activity activity){
-    setState(() {
-     // activity.activityStatut = ActivityStatut.done;
-    Provider.of<TripProvider>(context).setActivityToDown(activity);
-    });
-   
+  void setActivityToDown(String activityId){
+
+
+    widget.trip.activitiesIdByStatut[ActivityIdStatut.onGoing].remove(activityId);
+    widget.trip.activitiesIdByStatut[ActivityIdStatut.done].remove(activityId);
+
+    String id = Provider.of<TripProvider>(context).id;
+    print(id);
+    Provider.of<TripProvider>(context).updateActivityStatus(id, activityId);
+
   }
+
+
 
 
   @override
   Widget build(BuildContext context) {
+    print("build TripActivitiesList : "+widget.activities.length.toString());
     return  ListView.builder(
         itemCount: widget.activities.length ,
         itemBuilder: (context, i){
@@ -34,7 +45,7 @@ class _TripActivitiesListState extends State<TripActivitiesList> {
           // en le poussant vers un coté
           // elle prend forcément un key qui doit etre unique
           return Container(
-            child: widget.filter == ActivityStatut.onGoig ?
+            child: widget.filter == ActivityIdStatut.onGoing ?
             Dismissible(
               key: ValueKey<String>(widget.activities[i].id),
               //direction du dismised -> permet de définir une direction unique
@@ -58,7 +69,8 @@ class _TripActivitiesListState extends State<TripActivitiesList> {
               //parametre correspond à la direction de déclenchement sila direction n'était pas unique
               //ici on met un _ pour ignorer le parametre parceque la direction est unique
               onDismissed: (DismissDirection direction){
-                setActivityToDown(widget.activities[i]);
+                String id = Provider.of<TripProvider>(context).id;
+                return setActivityToDown(widget.activities[i].id);
                 print("dismised");
               },
             )

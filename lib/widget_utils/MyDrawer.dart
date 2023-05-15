@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/views/trips/trips_view.dart';
 
@@ -7,36 +8,43 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-            child: Text(
-                "My Drawer",
-                style: TextStyle(color: Colors.white, fontSize: 30.0),),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withOpacity(0.7)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight
+      elevation: 10.0,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(50)
+        ),
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Text(
+                "Triplan",
+                style: TextStyle(color: Colors.blueGrey[900], fontSize: 30.0),),
 
-              )
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.home),
-            title: Text("Accueil"),
-            onTap: () => Navigator.pushNamed(context, "/"),
-          ),
-          ListTile(
-            leading: Icon(Icons.flight),
-            title: Text("Voyage"),
-            onTap: () => Navigator.pushNamed(context, TripsView.routeName),
-          )
-        ],
-      ),
+            Divider(
+              color: Colors.grey,
+              height: 2.0,
+              thickness: 3.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.home,size: 30.0,color: Colors.black
+                ,),
+              title: Text("Accueil", style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+              onTap: () => Navigator.pushNamed(context, "/"),
+            ),
+            ListTile(
+              leading: Icon(Icons.flight,
+              size: 30.0,color: Colors.black
+                ,),
+              title: Text("Voyage", style: TextStyle(fontSize: 16, color: Colors.grey[600]
+                ),),
+              onTap: () => Navigator.pushNamed(context, TripsView.routeName),
+            )
+          ],
+        ),
+      )
+      
     );
   }
 }

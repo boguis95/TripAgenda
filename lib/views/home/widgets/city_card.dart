@@ -10,6 +10,7 @@ class City_card extends StatelessWidget {
   const City_card({ this.city}) ;
 
 
+
   @override
   Widget build(BuildContext context) {
     //Card prendra les dimension de son child
@@ -32,7 +33,7 @@ class City_card extends StatelessWidget {
             //        -> peut etre fournit comme child de la card en absence d'image
             Ink.image(
               fit: BoxFit.cover,
-              image: AssetImage(
+              image: NetworkImage(
             // on lui passe directement la propriété image -> qui prendra sa valeur(passé au contructor)lors de l'utilisation du widget
                 city.image
               ),
@@ -47,7 +48,7 @@ class City_card extends StatelessWidget {
                       //          -> prend un objet
                        //         -> ici on lui fourni l'instance de City en cours -> du city_card sur le quel on clique
                       //                                                           -> pour récuperer les données à afficher selon la ville
-                       arguments: city.name)
+                       arguments: city)
                 },
               ),
             ),

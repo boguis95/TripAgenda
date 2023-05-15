@@ -7,7 +7,7 @@ class ActivityList extends StatelessWidget {
  final List<Activity> activities;
  final Function toggleActivity;
  //ne contient que les id des activités séléctionnées qui sont des string
- final List<Activity> selectedActivities;
+ final List<String> selectedActivities;
 
   const ActivityList({ this.activities, this.toggleActivity, this.selectedActivities}) ;
 
@@ -25,7 +25,7 @@ class ActivityList extends StatelessWidget {
       itemBuilder: (context, index){
         return ActivityCard(activity: activities[index],
                              //activities[index].id -> id de l'activity sur le quel on est placé
-                             isSelected: selectedActivities.contains(activities[index]),
+                             isSelected: selectedActivities.contains(activities[index].id),
                              toggleActivity: () {
                               toggleActivity(activities[index]);
                              });

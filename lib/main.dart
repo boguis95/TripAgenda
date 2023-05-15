@@ -1,6 +1,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/dataBase/CityRepo.dart';
 import 'package:flutter_app/providers/CityProvider.dart';
 import 'package:flutter_app/providers/TripProvider.dart';
 import 'package:flutter_app/servicies/Authenytication.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_app/views/trips/trips_view.dart';
 import 'package:flutter_app/widget_utils/404.dart';
 import 'package:flutter_app/widget_utils/DataWidget.dart';
 import 'package:provider/provider.dart';
+import 'dataBase/ActivityRepo.dart';
 import 'modeles/City_modele.dart';
 import 'modeles/Trip_modele.dart';
 import 'modeles/User.dart';
@@ -22,6 +24,10 @@ Future<void> main() async {
   //initialisation de firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+ // await ActivityRepo().saveActivities();
+
+ //CityRepo().saveCities();
   // quand on utilise les inherithed widgets -> on enveloppe notre widget main par ce dernier
   //DataWidget(child: MyApp())
   runApp(TriPlan());
@@ -50,7 +56,6 @@ class _TriPlanState extends State<TriPlan> {
     return MultiProvider(
         providers: [
           //StreamProvider -> permet de brancher notre stream qui va écouter l'etat d'authentification du user
-
           StreamProvider<AppUser>.value(
               value: AuthenticationService().user,
               initialData: null),

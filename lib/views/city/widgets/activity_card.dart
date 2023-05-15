@@ -20,7 +20,7 @@ class ActivityCard extends StatelessWidget {
         child: Stack(
           children: [
             Ink.image(
-              image: AssetImage(activity.image),
+              image: NetworkImage(activity.image),
               fit: BoxFit.cover,
               child: InkWell(
                 onTap: toggleActivity,

@@ -4,10 +4,11 @@ import 'package:flutter_app/modeles/Activity_modele.dart';
 
 class TripActivityList extends StatelessWidget {
 
-  List<Activity> selectedActivities;
+  List<String> selectedActivities;
+  List<Activity> activities ;
   final Function deleteActivity;
 
-TripActivityList({this.selectedActivities, this.deleteActivity});
+TripActivityList({this.selectedActivities, this.deleteActivity, this.activities});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -16,10 +17,12 @@ TripActivityList({this.selectedActivities, this.deleteActivity});
       //   -> mais pas très performant lorsque l'on a un grand nombre d'éléments
       child: ListView.builder(
         itemBuilder: (context, index) {
-          var activity = selectedActivities[index];
+
+          var mySelectedActivities = activities.where((element) => selectedActivities.contains(element.id)).toList();
+          var activity = mySelectedActivities[index];
           return Card(
             child: ListTile(
-              leading: CircleAvatar(backgroundImage: AssetImage(activity.image) ,
+              leading: CircleAvatar(backgroundImage: NetworkImage(activity.image) ,
               ),
               title: Text(activity.name),
               subtitle: Text(activity.city),

@@ -23,3 +23,8 @@
 - chaque ville à ses propres activités -> possede une liste d'activités
 - A partir des activités sélectionnées dans une ville, on va organiser un voyage
 - parler des views , les widget et provider associés
+
+
+
+#A faire
+-probleme de formatage de l'email pendant la connexion
