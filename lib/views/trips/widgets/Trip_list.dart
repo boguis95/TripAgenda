@@ -12,10 +12,10 @@ class TripList extends StatelessWidget {
   final List<Trip> trips;
 
 
-   TripList({Key key, this.trips}) : super(key: key);
+   TripList({ required this.trips}) : super();
 
   Future<City> loadCity(String cityName, BuildContext context) async {
-    City city = await Provider.of<CityProvider>(context).getCityByName(cityName);
+    City city = await Provider.of<CityProvider>(context, listen: false).getCityByName(cityName);
     if (city != null) {
       print("Loaded city: ${city.name}");
       return city;

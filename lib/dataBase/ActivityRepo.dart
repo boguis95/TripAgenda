@@ -11,6 +11,7 @@ class ActivityRepo {
 
   //CityRepo();
   // ignore: missing_return
+ /*
   Future<void> saveActivities() async  {
     List<Activity> activities = data.activities1;
     activities.forEach((activity)async {
@@ -28,6 +29,8 @@ class ActivityRepo {
 
   }
 
+  */
+
   //on va streamer -> récuperation à temps réel(mise à jour prise en compte) les activités relatif à la ville séléctionné
  static Stream<List<Activity>> getActivitiesByCity(String cityName) {
     return activityCollection.where('city',isEqualTo: cityName).snapshots().map((col) => col.docs.map((doc) => Activity.fromSnapshot(doc)).toList()) ;
@@ -38,14 +41,15 @@ class ActivityRepo {
    QuerySnapshot col = await activityCollection.get();
    final List<Activity> activities = [];
      col.docs.forEach((doc) {
-       Activity activity = Activity();
-       if(doc.data()['city'] == cityName){
+       Activity activity = Activity(name: '', image: '', id: '', city: '', price: 0.0);
+       var docu = doc.data() as Map<String, dynamic>;
+       if(docu['city'] == cityName){
          activity.id = doc.id;
-         activity.name = doc.data()['name'];
-         activity.city =  doc.data()['city'];
-         activity.image =  doc.data()['image'];
-         activity.price =  doc.data()['price'];
-         activity.activityStatut =  doc.data()['activityStatut'];
+         activity.name = docu['name'];
+         activity.city =  docu['city'];
+         activity.image =  docu['image'];
+         activity.price =  docu['price'];
+         //activity.activityStatut =  docu['activityStatut'];
          activities.add(activity);
        }
 

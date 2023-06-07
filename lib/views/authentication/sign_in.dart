@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/dataBase/CityRepo.dart';
 import 'package:flutter_app/servicies/Authenytication.dart';
 import 'package:flutter_app/views/authentication/utils/constantes.dart';
 
 class SignIn extends StatefulWidget {
-  const SignIn({Key key}) : super(key: key);
+  const SignIn() : super();
 
   @override
   _SignInState createState() => _SignInState();
@@ -33,7 +34,7 @@ class _SignInState extends State<SignIn> {
 
   void toggleView() {
     setState(() {
-      //_fromKey.currentState.reset();
+      _fromKey.currentState?.reset();
       error = '';
       emailController.text = '';
       passwordController.text = '';
@@ -82,20 +83,20 @@ class _SignInState extends State<SignIn> {
                TextFormField(
                   controller: firstNameController,
                   decoration: textInputDecoration.copyWith(hintText: 'prénom', hintStyle: TextStyle(color: Colors.grey[400])),
-                  validator: (value) => value.isEmpty ? "entrer un prénom valide" : null,
+                  validator: (value) => value!.isEmpty ? "entrer un prénom valide" : null,
                 ) : Container(),
                 SizedBox(height:  !showSignIn ? 10.0 : 0.0,),
                 !showSignIn ?
                 TextFormField(
                   controller: lastNameController,
                   decoration: textInputDecoration.copyWith(hintText: 'nom',  hintStyle: TextStyle(color: Colors.grey[400])),
-                  validator: (value) => value.isEmpty ? "entrer un nom valide" : null,
+                  validator: (value) => value!.isEmpty ? "entrer un nom valide" : null,
                 )  : Container(),
                 SizedBox(height:  !showSignIn ? 10.0 : 0.0,),
                 TextFormField(
                   controller: emailController,
                   decoration: textInputDecoration.copyWith(hintText: 'email',  hintStyle: TextStyle(color: Colors.grey[400])),
-                  validator: (value) => value.isEmpty ? "entrer un eamil valide" : null,
+                  validator: (value) => value!.isEmpty ? "entrer un eamil valide" : null,
                 ),
                 SizedBox(height: 10.0 ),
                 TextFormField(
@@ -103,18 +104,20 @@ class _SignInState extends State<SignIn> {
                   obscureText: true,
                   controller: passwordController,
                   decoration: textInputDecoration.copyWith(hintText: 'mot de passe',  hintStyle: TextStyle(color: Colors.grey[400])),
-                  validator: (value) => value.length < 8 ? "le mot de passe ne peut pas contenir moins de 8 caractères" : null,
+                  validator: (value) => value!.length < 8 ? "le mot de passe ne peut pas contenir moins de 8 caractères" : null,
                 ),
                 SizedBox(height: 10.0,),
                 Container(
                   alignment: Alignment.centerRight,
-                  child: RaisedButton(
+                  child: ElevatedButton(
                     child:  Text(
                       !showSignIn ? "s'incrire" : "se connecter",
                       style: TextStyle(color: Colors.white, fontSize: 17.0),) ,
-                    color: Theme.of(context).primaryColor,
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                    ),
                     onPressed: () async {
-                      if(_fromKey.currentState.validate()){
+                      if(_fromKey.currentState!.validate()){
 
 
                           var password = passwordController.value.text;
@@ -122,25 +125,38 @@ class _SignInState extends State<SignIn> {
                           var firstName = firstNameController.value.text;
                           var lastName = lastNameController.value.text;
 
-
-                          dynamic result =  ! showSignIn
+                          try{
+                            dynamic result =  ! showSignIn
                               ? await _auth.registerWithEmailAndPassword(firstName,lastName, email, password)
-                              : await _auth.signInWithEmailAndPassword(email, password);
-
-
-
-                          if(result == null) {
-                            setState(() {
-                              error = 'Veuillez entrer un mot de passe correct';
-                            });
+                              :  await _auth.signInWithEmailAndPassword(email, password);
+                              if(result == null) {
+                              setState(() {
+                              error = ' email ou mot de passe incorrect';
+                              });
+                              }}catch(e){
+                              if (e is FirebaseException && e.message == 'The email address is badly formatted') {
+                                setState(() {
+                                  error = ' email incorrect';
+                                });
+                              }
                           }
+    }
 
-                      }
+
+
+
+
+
+
 
 
                     },
                   ),
-                )
+
+                ),
+                SizedBox(height: 10.0,),
+                Text(error, style: TextStyle(color: Colors.red),)
+
               ],
             ),
           ),

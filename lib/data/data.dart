@@ -1,7 +1,7 @@
 
 import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/modeles/City_modele.dart';
-
+/*
 List<City> cities = [
   City(name: "Paris",
       image: "https://cdn.pariscityvision.com/library/image/5257.jpg",
@@ -101,4 +101,6 @@ List<Activity> activities1 = [
       price: 00.0),
 
 ];
+
+ */
 

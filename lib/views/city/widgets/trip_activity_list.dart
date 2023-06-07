@@ -8,7 +8,7 @@ class TripActivityList extends StatelessWidget {
   List<Activity> activities ;
   final Function deleteActivity;
 
-TripActivityList({this.selectedActivities, this.deleteActivity, this.activities});
+TripActivityList({required this.selectedActivities, required this.deleteActivity, required this.activities});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,7 +30,7 @@ TripActivityList({this.selectedActivities, this.deleteActivity, this.activities}
                 icon: Icon(Icons.delete),
                 color: Colors.red,
                 onPressed: () {
-                  deleteActivity(activity.id);
+                  deleteActivity(activity);
                   //Scaffold.of(context) -> permet de recuperer le Scaffold(Vue) le plus proche dans notre arbe de widget
                   //                            -> la ou on va afficher notre snackbar
                   // les .. permet  d'appeller sur un meme objet plusieurs méthodes

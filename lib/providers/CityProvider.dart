@@ -13,8 +13,8 @@ class CityProvider with ChangeNotifier{
 
   //final List<City> _cities = data.cities;
   //final CollectionReference cityCollection = FirebaseFirestore.instance.collection("cities");
-  Future<QuerySnapshot> activitiesSnapshot ;
-  Future<QuerySnapshot> citiesSnap;
+  late Future<QuerySnapshot> activitiesSnapshot ;
+  late Future<QuerySnapshot> citiesSnap;
   Future<QuerySnapshot> _citiesSnap = FirebaseFirestore.instance.collection('cities').get();
 
   final CollectionReference cityCollection = FirebaseFirestore.instance.collection("cities");
@@ -52,9 +52,10 @@ class CityProvider with ChangeNotifier{
     List<City> cities = [];
     QuerySnapshot col = await cityCollection.get();
     col.docs.forEach((doc) {
-      City city = City() ;
-      city.name = doc.data()['name'];
-      city.image = doc.data()['image'];
+      var docu = doc.data() as Map<String, dynamic>;
+      City city = City(id: '', name: '', image: '', activities: []) ;
+      city.name = docu['name'];
+      city.image = docu['image'];
       city.id = doc.id;
       cities.add(city);
       print(city.name);
@@ -64,11 +65,12 @@ class CityProvider with ChangeNotifier{
 
   Future<City> getCityByName(String cityName) async {
     List<City> cities = await listOfCities();
-    return cities.firstWhere((city) => city.name == cityName, orElse: () => null);
+    return cities.firstWhere((city) => city.name == cityName,
+        orElse: () => City(id: "", name: "", image: "", activities: []));
   }
 
 
-
+/*
   City getProsCityByName (String cityName) {
     List<City> cities = [];
     _citiesSnap.then((col) {
@@ -81,6 +83,8 @@ class CityProvider with ChangeNotifier{
     });
     return cities.firstWhere((city) => city.name == cityName);
   }
+
+ */
 
 
 //UnmodifiableListView -> va empecher la modification des éléments de notre liste au niveau des widgets qui utilise les données

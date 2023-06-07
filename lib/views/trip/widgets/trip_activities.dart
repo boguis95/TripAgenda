@@ -7,31 +7,60 @@ import 'package:flutter_app/views/trip/widgets/trip_activities_list.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class TripActivities extends StatelessWidget {
+class TripActivities extends StatefulWidget {
 
   List<Activity> activities;
   Trip trip;
 
-   TripActivities({Key key, this.activities, this.trip}) : super(key: key);
+
+  TripActivities({ required this.activities, required this.trip}) : super();
+  @override
+  _TripActivitiesState createState() => _TripActivitiesState();
+}
+
+class _TripActivitiesState extends State<TripActivities> {
+
+  late List<Activity> activities;
+  late Trip trip;
+
+  void settripState() {
+    setState(() {
+      trip = widget.trip;
+      activities = widget.activities;
+    });
+
+  }
 
 
-  void setActivityToDown(BuildContext context,String activityId){
 
-    // activity.activityStatut = ActivityStatut.done;
-    trip.activitiesIdByStatut[ActivityIdStatut.onGoing].remove(activityId);
-    trip.activitiesIdByStatut[ActivityIdStatut.done].remove(activityId);
 
-    String id = Provider.of<TripProvider>(context).id;
-    print(id);
-    Provider.of<TripProvider>(context).updateActivityStatus(id, activityId);
+  void setActivityToDown(String activityId) async{
+    setState(()  {
+
+      trip.activitiesIdByStatut[ActivityIdStatut.onGoing]?.remove(activityId);
+      trip.activitiesIdByStatut[ActivityIdStatut.done]?.add(activityId);
+
+
+      Activity activity = activities.firstWhere((activity) => activity.id == activityId);
+      activities.remove(activity);
+
+    });
+
+    String id = trip.id;
+    print("id-tripactivities-list : "+id.toString());
+    //print(id);
+    await Provider.of<TripProvider>(context).updateActivityStatus(id, activityId);
 
   }
 
 
   Widget build(BuildContext context) {
-    print("build TripActivities - activityStatutOngoing"+trip.activitiesIdByStatut[ActivityIdStatut.onGoing].length.toString());
-    print("build TripActivities : "+activities.length.toString());
-    return Container(
+    settripState();
+    print("build TripActivities - activityStatutOngoing : "+widget.trip.activitiesIdByStatut[ActivityIdStatut.onGoing]!.length.toString());
+    print("build TripActivities : " + widget.activities.length.toString());
+    print("build TripActivities-tripId : "+widget.trip.id.toString());
+
+    return  Container(
       child: DefaultTabController(
         length: 2,
         child: Column(
@@ -51,13 +80,13 @@ class TripActivities extends StatelessWidget {
             ),
             Container(
               height: 600.0,
-              child: TabBarView(
+              child:  widget.activities.length == 0 ? Center(child: CircularProgressIndicator(),): TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  TripActivitiesList(activities: activities.where((activity) => trip.activitiesIdByStatut[ActivityIdStatut.onGoing].contains(activity.id)).toList(),
+                  TripActivitiesList(activities: activities.where((activity) => trip.activitiesIdByStatut[ActivityIdStatut.onGoing]!.contains(activity.id)).toList(),
                                  filter : ActivityIdStatut.onGoing, trip: trip, setActivityToDown: setActivityToDown),
-                  TripActivitiesList(activities: activities.where((activity) => trip.activitiesIdByStatut[ActivityIdStatut.done].contains(activity.id)).toList(),
-                                     filter : ActivityIdStatut.done)
+                  TripActivitiesList(activities: activities.where((activity) => trip.activitiesIdByStatut[ActivityIdStatut.done]!.contains(activity.id)).toList(),
+                                     filter : ActivityIdStatut.done, setActivityToDown: setActivityToDown, trip: trip,)
                 ],
               ),
             )

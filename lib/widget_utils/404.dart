@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NotFoundRoute extends StatelessWidget {
-  const NotFoundRoute({Key key}) : super(key: key);
+  const NotFoundRoute() : super();
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class NotFoundRoute extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Oops route not found"),
-            TextButton(
+            ElevatedButton(
               child: Text("Page d'accueil"),
               onPressed: () => Navigator.pushNamed(context, "/"),
 

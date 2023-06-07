@@ -10,7 +10,7 @@ class TripActivitiesList extends StatefulWidget {
    Trip trip;
    Function setActivityToDown;
 
-  TripActivitiesList({Key key, this.activities, this.filter, this.trip, this.setActivityToDown}) : super(key: key);
+  TripActivitiesList({ required this.activities, required this.filter, required this.trip, required this.setActivityToDown}) : super();
   @override
   _TripActivitiesListState createState() => _TripActivitiesListState();
 }
@@ -18,28 +18,42 @@ class TripActivitiesList extends StatefulWidget {
 
 
 class _TripActivitiesListState extends State<TripActivitiesList> {
-  Trip trip;
+  late Trip trip;
+  late List<Activity> activities;
+  late List<Activity> activities2;
 
-  void setActivityToDown(String activityId){
+  void setActivityToDown(String activityId) async {
+    setState(()  {
+     trip = widget.trip;
+   trip.activitiesIdByStatut[ActivityIdStatut.onGoing]?.remove(activityId);
+   trip.activitiesIdByStatut[ActivityIdStatut.done]?.add(activityId);
+
+      //activities = widget.activities;
+     Activity activity = activities.firstWhere((activity) => activity.id == activityId);
+      activities.remove(activity);
 
 
-    widget.trip.activitiesIdByStatut[ActivityIdStatut.onGoing].remove(activityId);
-    widget.trip.activitiesIdByStatut[ActivityIdStatut.done].remove(activityId);
+    });
 
-    String id = Provider.of<TripProvider>(context).id;
-    print(id);
-    Provider.of<TripProvider>(context).updateActivityStatus(id, activityId);
-
+    String id = trip.id;
+    print("id-tripactivities-list : "+id.toString());
+    //print(id);
+    await Provider.of<TripProvider>(context, listen: false).updateActivityStatus(id, activityId);
   }
 
-
+void doSetState(){
+    setState(() {
+      activities = widget.activities;
+    });
+}
 
 
   @override
   Widget build(BuildContext context) {
-    print("build TripActivitiesList : "+widget.activities.length.toString());
+    doSetState();
+    print("build TripActivitiesList : "+activities.length.toString());
     return  ListView.builder(
-        itemCount: widget.activities.length ,
+        itemCount: activities.length ,
         itemBuilder: (context, i){
           //Dismissible permet de valider une activité réalisé comme dans le cas de l'archivage des email avec gmail
           // en le poussant vers un coté
@@ -47,12 +61,12 @@ class _TripActivitiesListState extends State<TripActivitiesList> {
           return Container(
             child: widget.filter == ActivityIdStatut.onGoing ?
             Dismissible(
-              key: ValueKey<String>(widget.activities[i].id),
+              key: ValueKey<String>(activities[i].id),
               //direction du dismised -> permet de définir une direction unique
               direction: DismissDirection.endToStart,
               child: Card(
                 child:ListTile(
-                  title: Text(widget.activities[i].name),
+                  title: Text(activities[i].name),
                 ),
               ) ,
               //background -> correspond au widget qui apparait lorqu'on dismiss l'élément
@@ -68,15 +82,19 @@ class _TripActivitiesListState extends State<TripActivitiesList> {
               //onDismissed-> fonction qui se déclenche lorsque l'on dismiss
               //parametre correspond à la direction de déclenchement sila direction n'était pas unique
               //ici on met un _ pour ignorer le parametre parceque la direction est unique
-              onDismissed: (DismissDirection direction){
-                String id = Provider.of<TripProvider>(context).id;
-                return setActivityToDown(widget.activities[i].id);
+              onDismissed: (DismissDirection direction) async{
+                //String id = Provider.of<TripProvider>(context).id;
+
+                setActivityToDown(activities[i].id);
+                setState(() {
+                });
                 print("dismised");
               },
             )
-                : Card(
+                :
+            Card(
                 child:ListTile(
-                  title: Text(widget.activities[i].name, style: TextStyle(color: Colors.grey[400]),),
+                  title: Text(activities[i].name, style: TextStyle(color: Colors.grey[400]),),
                 )
             ),
           );

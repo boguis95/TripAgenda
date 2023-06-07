@@ -11,7 +11,7 @@ class TripOverview extends StatelessWidget {
   final String cityName;
   final double amount;
 
-  const TripOverview({ this.setDate, this.trip, this.cityName, this.amount}) ;
+  const TripOverview({ required this.setDate, required this.trip, required this.cityName, required this.amount}) ;
 
 
 
@@ -44,16 +44,21 @@ class TripOverview extends StatelessWidget {
                 Expanded(
                   child: Text(
                     //DateFormat() -> formater la date avec le modèle qu'on lui a fourni
-                  trip.date != null ? DateFormat("d/M/y").format(trip.date)
-                                 : "Choisissez une date",
+                    trip.date != null ? DateFormat("d/M/y").format(trip.date)
+                        : "Choisissez une date",
                     style: TextStyle(
                         fontSize: 20.0
                     ),
                   ),
                 ),
-                RaisedButton(
-                    child: Text("Séléctionner une date"),
-                    onPressed: setDate
+                ElevatedButton(
+                  child: Text("Sélectionner une date"),
+                  onPressed: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_){
+                      setDate();
+                    });
+
+                  }
                 )
               ],
             ),

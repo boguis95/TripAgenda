@@ -12,13 +12,13 @@ class AuthenticationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   //cette methode convertit le user de firebase en notre user personnalisé
-  AppUser userFromFirebaseToAppUser(User user){
-    return user != null ? AppUser(uid: user.uid) : null;
+  AppUser? userFromFirebaseToAppUser(User? user){
+    return user != null ? AppUser(uid: user.uid, firstName: '', lastName: '', email: '') : null;
   }
 
   //lz Stream se charge de verifier l'état d'authentification de l'utilsateur courant
   //  et le fournir à tous les widgets grace à StreamProvider
-  Stream<AppUser> get user {
+  Stream<AppUser?> get user {
     return _auth.authStateChanges().map(userFromFirebaseToAppUser);
   }
 
@@ -28,9 +28,9 @@ class AuthenticationService {
     //await CityRepo().saveCities();
     try{
       UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      User user = result.user;
+      User? user = result.user;
 
-      return userFromFirebaseToAppUser(user);
+      return userFromFirebaseToAppUser(user!);
     } catch(e){
       print(e.toString());
       return null;
@@ -42,8 +42,8 @@ class AuthenticationService {
    //await ActivityRepo().saveActivities();
     try{
       UserCredential result =await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      User user = result.user;
-      UserRepo(uid: user.uid).saveUser(firsName, lastName, email);
+      User? user = result.user;
+      UserRepo(uid: user!.uid).saveUser(firsName, lastName, email);
       return userFromFirebaseToAppUser(user);
     } catch(e){
       print(e.toString());

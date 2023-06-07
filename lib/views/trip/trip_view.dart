@@ -22,16 +22,17 @@ import 'package:flutter_app/data/data.dart' as data;
     class _State extends State<TripView> {
 
   List<Activity> activities = [];
-  City city;
-  Trip trip;
+  late City city;
+  late Trip trip;
 
 @override
 void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     setState(() {
-       city =  (ModalRoute.of(context).settings.arguments as Map<String, Object>)["city"];
-       trip = (ModalRoute.of(context).settings.arguments as Map<String, Object>)["trip"];
+      final arguments = ModalRoute.of(context)!.settings.arguments as Map<String, Object?>;
+      city = arguments["city"]! as City;
+      trip = arguments["trip"]! as Trip;
     });
 
     getTripActivities(city.name, trip);
@@ -40,7 +41,7 @@ void didChangeDependencies() {
 
   void tripActivitiesOngoing(){
   if(trip.activitiesIdByStatut != null){
-    print("build tripView - activityStatutOngoing"+trip.activitiesIdByStatut[ActivityIdStatut.onGoing].length.toString());
+    print("build tripView - activityStatutOngoing"+trip.activitiesIdByStatut[ActivityIdStatut.onGoing]!.length.toString());
   }
 
   }
@@ -111,6 +112,7 @@ void didChangeDependencies() {
                   ],
                 ),
               ),
+
               TripActivities(activities:activities, trip: trip)
             ],
           ),

@@ -15,16 +15,16 @@ ActivityStatut activityStatut;
 
 
 Activity({
-  @required this.name,
-  @required this.image,
-  @required this.id,
-  @required this.city,
-  @required this.price,
+  required this.name,
+  required this.image,
+  required this.id,
+  required this.city,
+  required this.price,
   this.activityStatut = ActivityStatut.onGoig
  }) ;
 
 factory Activity.fromSnapshot(DocumentSnapshot snap){
-  var snapshot = snap.data();
+  var snapshot = snap.data() as Map<String, dynamic>;
 
   return Activity(
       id : snapshot['id'],
@@ -37,8 +37,8 @@ factory Activity.fromSnapshot(DocumentSnapshot snap){
 }
 
 
-Activity.fromJson(Map<String, dynamic> json)
-    : id = json['id'],
+Activity.fromJson(Map<String, dynamic> json, String id)
+    : id = id,
       name = json['name'],
       image = json['image'],
       city = json['city'],

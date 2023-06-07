@@ -25,9 +25,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
- // await ActivityRepo().saveActivities();
+  // await ActivityRepo().saveActivities();
 
- //CityRepo().saveCities();
+  //CityRepo().saveCities();
   // quand on utilise les inherithed widgets -> on enveloppe notre widget main par ce dernier
   //DataWidget(child: MyApp())
   runApp(TriPlan());
@@ -50,18 +50,23 @@ class _TriPlanState extends State<TriPlan> {
   @override
   Widget build(BuildContext context) {
 
-   //Mutiprovider -> permet de brancher plusieurs providers
+    //Mutiprovider -> permet de brancher plusieurs providers
     //ChangeNotifierProvider -> permet de notifier aux widegt qui consomme la données une mise à jour de ladonnée pour qu'ils puissent rebuild
     //Vu qu'on utilise pas le context -> on peut directement utiliser le constructeur nommé ChangeNotifierProvider.value de ChangeNotifierProvider
     return MultiProvider(
-        providers: [
-          //StreamProvider -> permet de brancher notre stream qui va écouter l'etat d'authentification du user
-          StreamProvider<AppUser>.value(
-              value: AuthenticationService().user,
-              initialData: null),
-          ChangeNotifierProvider.value(value: CityProvider()),
-          ChangeNotifierProvider.value(value: TripProvider())
-        ],
+      providers: [
+        //StreamProvider -> permet de brancher notre stream qui va écouter l'etat d'authentification du user
+        StreamProvider<AppUser?>.value(
+          value: AuthenticationService().user,
+          initialData: null,
+          catchError: (_, error) {
+            throw error.toString();
+            return AppUser(uid: "", email: "", firstName: "", lastName: "");
+          },
+        ),
+        ChangeNotifierProvider.value(value: CityProvider()),
+        ChangeNotifierProvider.value(value: TripProvider())
+      ],
       child:  MaterialApp(
         //ThemeData est un inheritWidget natif -> appliquer des crateistique à tout l'application
         theme: ThemeData(

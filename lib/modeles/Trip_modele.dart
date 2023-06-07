@@ -2,23 +2,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/modeles/Activity_modele.dart';
+import 'package:provider/provider.dart';
 
 enum ActivityIdStatut{ onGoing, done}
 class Trip {
-  String id;
-  String city;
-  //les id des activités
-  List<String> activitiesId;
-  Map<ActivityIdStatut, List<String>> activitiesIdByStatut;
-  DateTime date;
-  double amount;
+  late String uId;
+  late String id;
+  late String city;
+  late List<String> activitiesId;
+  late Map<ActivityIdStatut, List<String>> activitiesIdByStatut;
+  late DateTime date;
+  late double amount;
 
   Trip({
-    @required  this.city,
-    @required  this.activitiesId,
-    this.amount,
-    this.date,
-    this.activitiesIdByStatut});
+    required this.id,
+    required this.uId,
+    required this.city,
+    required this.activitiesId,
+    required this.amount,
+    required this.date,
+    required this.activitiesIdByStatut});
 
   readDate(Timestamp dateTime) {
     DateTime date = DateTime.parse(dateTime.toDate().toString());
@@ -30,7 +33,8 @@ class Trip {
 
  Trip.fromJson(String id, Map<String, dynamic> json)
  {
-   //this.id = json['id'];
+   this.id = id;
+   uId = json['uId'];
    city = json['city'];
    activitiesId = List<String>.from(json['activities'].map((id) => id).toList());
    amount = json['amount'];
@@ -45,6 +49,7 @@ class Trip {
 
   Map<String, dynamic> toJson() =>
       {
+        'uId': uId,
         'city': city,
         'activities': activitiesId,
         'date': date,

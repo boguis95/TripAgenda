@@ -16,6 +16,7 @@ class CityRepo {
 
   //CityRepo();
   // ignore: missing_return
+ /*
  Future<void> saveCities() async  {
     List<City> cities = data.cities;
 
@@ -33,6 +34,7 @@ class CityRepo {
 
   }
 
+  */
   /*
   //DocumentSnapshot -> fait reference à un document
   //QuerySnapshot -> par contre fait reference à une liste de documents

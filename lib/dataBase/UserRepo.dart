@@ -8,7 +8,7 @@ class UserRepo {
 
   String uid;
 
-  UserRepo({this.uid});
+  UserRepo({required this.uid});
 
   //CollectionReference -> fait reference à une collection (nom)
   final CollectionReference userCollection = FirebaseFirestore.instance.collection("users");
@@ -23,26 +23,34 @@ class UserRepo {
 
   //DocumentSnapshot -> fait reference à un document
   //QuerySnapshot -> par contre fait reference à une liste de documents
-  AppUser userFromSnapshot(DocumentSnapshot snapshot) {
+  AppUser userFromSnapshot(DocumentSnapshot snap) {
+    var snapshot = snap.data() as Map<String, dynamic>;
     return AppUser(
       uid: uid,
-      firstName: snapshot.data()['firstName'],
-      lastName: snapshot.data()['lastName'],
+      firstName: snapshot['firstName'],
+      lastName: snapshot['lastName'],
+      email: snapshot['email'],
     );
   }
 
   Stream<AppUser> get user {
     return userCollection.doc(uid).snapshots().map(userFromSnapshot);
   }
-
+/*
   Stream<List<AppUser>> get users {
-    //return userCollection.get().map(userFromSnapshot);
+    return userCollection.get().map(userFromSnapshot);
   }
 
+ */
+
+
   //recuperation de la liste des utilisateurs de firebase et mappage en AppUser
+  /*
   List<AppUser> userListFromSnapshot(QuerySnapshot snapshot){
     return snapshot.docs.map((doc) {
       return userFromSnapshot(doc);
     });
   }
+
+   */
 }

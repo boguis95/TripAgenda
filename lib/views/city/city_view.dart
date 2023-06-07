@@ -8,8 +8,10 @@ import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/modeles/City_modele.dart';
 
 import 'package:flutter_app/modeles/Trip_modele.dart';
+import 'package:flutter_app/modeles/User.dart';
 import 'package:flutter_app/providers/CityProvider.dart';
 import 'package:flutter_app/providers/TripProvider.dart';
+import 'package:flutter_app/servicies/Authenytication.dart';
 import 'package:flutter_app/views/city/widgets/activity_card.dart';
 import 'package:flutter_app/views/city/widgets/activity_list.dart';
 import 'package:flutter_app/views/city/widgets/tripOverview.dart';
@@ -37,18 +39,20 @@ class CityView extends StatefulWidget {
 
 
 
-   showContent({BuildContext context, List<Widget> children}) {
+   showContent({required BuildContext context, required List<Widget> children}) {
     //Ici On recupere l'orientation de l'écran à l'instant t (landscape -> sur la largeur, portrait -> sur la longueur
     //  -> grace à l'inheritidet natif MediaQuery
-    final orientation = MediaQuery.of(context).orientation;
+  /*  final orientation = MediaQuery.of(context).orientation;
     if(orientation == Orientation.landscape){
      return Row(
        //on veut que notre Row() prend toute la hauteur  disponible
        crossAxisAlignment: CrossAxisAlignment.stretch,
        children: children,);
     }else{
+
+   */
      return Column(children: children,);
-    }
+    //}
   }
 
   @override
@@ -56,12 +60,12 @@ class CityView extends StatefulWidget {
 }
 
 class _CityViewState extends State<CityView> {
- 
 
-  City city;
+
+  late City city;
   //List<Activity> activities;
-  Trip myTrip;
-  int index;
+  late Trip myTrip;
+  late int index;
   Map<ActivityIdStatut, List<String>> activityStatusMap = {
     ActivityIdStatut.onGoing: [],
     ActivityIdStatut.done: [],
@@ -77,7 +81,7 @@ class _CityViewState extends State<CityView> {
   @override
   void initState() {
     super.initState();
-    myTrip = Trip(city: "", activitiesId:[], date: null, activitiesIdByStatut: activityStatusMap );
+    myTrip = Trip(city: "", activitiesId:[], date: new DateTime(0), activitiesIdByStatut: activityStatusMap, id: '', uId: '', amount: 0.0 );
     index = 0;
 
   }
@@ -89,7 +93,7 @@ class _CityViewState extends State<CityView> {
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-     city = ModalRoute.of(context).settings.arguments;
+     city = (ModalRoute.of(context)?.settings.arguments as City?)!;
    // _activitiesSnapshot = FirebaseFirestore.instance.collection('activities').where('city',isEqualTo: city.name).get();
     //on fait appel à la méthode static of() de l'inheritWidget DataWidget
     // of() return context.dependOnInheritedWidgetOfExactType<DataWidget>() -> qui permet d'acceder aux données dans l'inheritWidget DataWidget
@@ -146,7 +150,7 @@ class _CityViewState extends State<CityView> {
     //on retourne la valeur la plus récente
     //print(previousValue + activity.price);
     double amount = previousValue + activity.price;
-    myTrip.amount = amount;
+    myTrip?.amount = amount;
     return amount;
 
     });
@@ -161,30 +165,37 @@ class _CityViewState extends State<CityView> {
 
   //permet  de mettre à jour l'idex du widget sur le quel on a tapé
   void switchIndex(newIndex){
-    setState(() {
-      index = newIndex;
-    });
+      setState(() {
+        index = newIndex;
+      });
+
+
   }
 
   void setCityName(City city){
-    setState(() {
-      myTrip.city = city.name ;
-    });
+       setState(() {
+         myTrip?.city = city.name ;
+       });
+
+
   }
 
   void setActivitiesStatut(BuildContext context){
-    Provider.of<TripProvider>(context).setActivitiesStatut(myTrip);
+    Provider.of<TripProvider>(context, listen: false).setActivitiesStatut(myTrip!);
   }
 
   //permet d'ajouter ou d'enlever une activité dans la liste des activité séléctionné
   void toggleActivity(Activity activity) {
-    setState(() {
+
       //si l'id de l'activité est présent nous allons le supprimé quand on tape dessus
       //sinon on l'ajoute
-      myTrip.activitiesId.contains(activity.id) ?
-          myTrip.activitiesId.remove(activity.id) :
-          myTrip.activitiesId.add(activity.id);
+    setState(() {
+      myTrip!.activitiesId.contains(activity.id) ?
+      myTrip?.activitiesId.remove(activity.id) :
+      myTrip?.activitiesId.add(activity.id);
     });
+
+
    // print(myTrip.activities);
   }
 
@@ -202,9 +213,11 @@ class _CityViewState extends State<CityView> {
   */
 
   void deleteActivity(Activity activity){
-    setState(() {
-      myTrip.activitiesId.remove(activity);
-    });
+      setState(() {
+        myTrip?.activitiesId.remove(activity.id);
+      });
+
+
   }
 
   // permet de définir la date du voyage
@@ -225,9 +238,11 @@ class _CityViewState extends State<CityView> {
         )
         // on récupere la promesse(date choisi) et on met à jour la date séléctionnéem
         .then((newDate) {
-          setState(() {
-            myTrip.date = newDate;
-          });
+            setState(() {
+              myTrip?.date = newDate!;
+            });
+
+
     });
 
   }
@@ -254,18 +269,20 @@ class _CityViewState extends State<CityView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  RaisedButton(
+                  ElevatedButton(
                     child: Text("Sauvegarder"),
-                    color: Theme
-                        .of(context)
-                        .primaryColor,
+                    style: ElevatedButton.styleFrom(
+                      primary: index == 0 ? Colors.blue : Colors.grey,
+                    ),
                     //Navigator.pop() -> ferme la fenetre et retourne  la réponse comme  promesse -> qui sera retourné par showDialog()
                     onPressed: () => Navigator.pop(context, "save"),
 
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     child: Text("Annuler"),
-                    color: Colors.red,
+                    style: ElevatedButton.styleFrom(
+                      primary: index == 0 ? Colors.blue : Colors.grey,
+                    ),
                     onPressed: () => Navigator.pop(context, "annuler"),
                   )
                 ],
@@ -275,7 +292,7 @@ class _CityViewState extends State<CityView> {
         });
     //print(result);
     if(result == "save"){
-      if(myTrip.date == null) {
+      if(myTrip?.date == null) {
         showDialog(
             context: context,
             builder: (context){
@@ -284,17 +301,18 @@ class _CityViewState extends State<CityView> {
                 titleTextStyle: TextStyle(color: Colors.red[900], fontSize: 20.0),
                 content: Text("Vous n'avez pas choisi une date "),
                 actions: [
-                  FlatButton(
+                  ElevatedButton(
                       child: Text("OK", style: TextStyle(fontSize: 15.0),),
                       onPressed:()=> Navigator.pop(context))],
               );
             }
         );
       }else{
-      setCityName(city);
-      setActivitiesStatut(context);
+        setCityName(city);
+        setActivitiesStatut(context);
      // Provider.of<TripProvider>(context).addTrip(myTrip);
-        Provider.of<TripProvider>(context).saveTrip(myTrip.toJson()).then((value) {myTrip.id = value.toString();});
+        myTrip?.uId = Provider.of<AppUser>(context, listen: false).uid;
+        Provider.of<TripProvider>(context, listen: false).saveTrip(myTrip?.toJson()).then((value) {myTrip?.id = value.toString();});
       Navigator.pushNamed(context, "/");
     }
     }
@@ -316,7 +334,7 @@ class _CityViewState extends State<CityView> {
     //on peut aussi commme pour didChangeDependencies() acceder aux données de notre inheritedWidget DataWidget
     //  -> directement dans notre méthode build -> on a acces au context
     //activities = DataWidget.of(context).activities;
-    return Scaffold(
+    return  Scaffold(
       appBar: AppBar(
 
         title: Text("Organisation de voyage"),
@@ -330,8 +348,9 @@ class _CityViewState extends State<CityView> {
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               List<Activity> activities2 = [];
               if (snapshot.hasData) {
-                snapshot.data.docs.forEach((doc) {
-                  Activity activity = Activity.fromJson(doc.data());
+                snapshot.data?.docs.forEach((doc) {
+                  var docu = doc.data() as Map<String, dynamic>;
+                  Activity activity = Activity.fromJson(docu, doc.id);
                   activity.id = doc.id;
                   activities2.add(
                       activity
@@ -363,7 +382,12 @@ class _CityViewState extends State<CityView> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.forward),
         //fait appel à la fonction saveDialog()
-        onPressed:() => saveDialog(city),
+        onPressed:() {
+
+          WidgetsBinding.instance.addPostFrameCallback((_){
+            saveDialog(city);
+          });
+        }
       ),
       bottomNavigationBar: BottomNavigationBar(
         //l'index de l'item acctuel

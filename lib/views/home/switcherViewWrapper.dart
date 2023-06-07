@@ -5,11 +5,11 @@ import 'package:flutter_app/views/home/home_view.dart';
 import 'package:provider/provider.dart';
 
 class SwitcherViewWrapper extends StatelessWidget {
-  const SwitcherViewWrapper({Key key}) : super(key: key);
+  const SwitcherViewWrapper() : super();
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AppUser>(context);
+    final user = Provider.of<AppUser?>(context);
     if(user == null) {
       return SignIn();
     }else{

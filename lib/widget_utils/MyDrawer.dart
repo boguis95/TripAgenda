@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/views/trips/trips_view.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({Key key}) : super(key: key);
+  const MyDrawer() : super();
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class MyDrawer extends StatelessWidget {
       elevation: 10.0,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.2),
+          //color: Colors.blue.withOpacity(0.2),
         borderRadius: BorderRadius.circular(50)
         ),
         child: ListView(

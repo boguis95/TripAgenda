@@ -7,7 +7,7 @@ class AppUser{
   String email;
 
 
-  AppUser({this.uid, this.firstName, this.lastName, this.email});
+  AppUser({required this.uid, required this.firstName, required this.lastName, required this.email});
 
 
   AppUser.fromJson(Map<String, dynamic> json)

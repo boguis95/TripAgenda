@@ -8,7 +8,7 @@ class ActivityCard extends StatelessWidget {
   final Function toggleActivity;
 
 
- ActivityCard({ this.activity, this.isSelected, this.toggleActivity});
+ ActivityCard({ required this.activity, required this.isSelected, required this.toggleActivity});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,12 @@ class ActivityCard extends StatelessWidget {
               image: NetworkImage(activity.image),
               fit: BoxFit.cover,
               child: InkWell(
-                onTap: toggleActivity,
+                onTap:  () {
+                  // Wrap the toggleActivity call inside addPostFrameCallback
+                  WidgetsBinding.instance!.addPostFrameCallback((_) {
+                    toggleActivity();
+                  });
+                },
               ),
             ),
             Container(

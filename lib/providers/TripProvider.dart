@@ -1,9 +1,13 @@
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_app/modeles/Activity_modele.dart';
 import 'package:flutter_app/modeles/Trip_modele.dart';
+import 'package:flutter_app/modeles/User.dart';
+import 'package:flutter_app/servicies/Authenytication.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TripProvider with ChangeNotifier {
 
@@ -12,7 +16,8 @@ class TripProvider with ChangeNotifier {
   final CollectionReference TripCollection = FirebaseFirestore.instance
       .collection("trips");
 
-  String tripId;
+  late String tripId;
+  bool isLoading = false;
 
 /*
   Stream<List<Trip>> get trips {
@@ -25,14 +30,10 @@ class TripProvider with ChangeNotifier {
 
   // ignore: missing_return
   Future<String> saveTrip(data) async {
-
-    var doc = TripCollection.add(data);
-    String id ;
-    doc.then((value) {
-      id = value.id;
-    });
-    return id;
+    var doc = await TripCollection.add(data);
+    String id = doc.id;
     notifyListeners();
+    return id;
   }
 
   readDate(Timestamp dateTime) {
@@ -42,13 +43,15 @@ class TripProvider with ChangeNotifier {
     String formatedDate = DateFormat.yMMMMd().format(date);
     return date;
   }
-
+/*
   Stream<List<Trip>> getTrips() {
     return TripCollection.snapshots().map((col) =>
         col.docs.map((doc) {
           return Trip.fromJson(doc.id,doc.data());
         }).toList());
   }
+
+ */
 
   String get  id{
     return tripId;
@@ -59,28 +62,45 @@ class TripProvider with ChangeNotifier {
   }
 
 
-  Stream<List<Trip>> getPastTrips() {
+
+
+  Stream<List<Trip>> getPastTrips(BuildContext context) {
 
     return TripCollection.snapshots().map((col) =>
         col.docs.where((trip) {
          // tripId = trip.id;
           //print("tripId - TripProvider : "+tripId);
-          DateTime date = Trip().readDate(trip.data()['date']);
+          var myTrip = trip.data() as Map<String, dynamic>;
+          DateTime date = readDate(myTrip['date']);
           return date.isBefore(DateTime.now());
         }
-        ).map((doc) => Trip.fromJson(tripId,doc.data())).toList());
+        ).where((element) {
+          var elem = element.data() as Map<String, dynamic>;
+          return elem['uId'] == Provider.of<AppUser>(context, listen: false).uid;
+        }).map((doc) {
+          var docu = doc.data() as Map<String, dynamic>;
+          id = doc.id;
+          return Trip.fromJson(id,docu);
+        }).toList());
   }
 
-  Stream<List<Trip>> getFutureTrips() {
-    String tripId;
+  Stream<List<Trip>> getFutureTrips(BuildContext context) {
     return TripCollection.snapshots().map((col) =>
         col.docs.where((trip) {
-         id = trip.id;
+          // tripId = trip.id;
           //print("tripId - TripProvider : "+tripId);
-          DateTime date = Trip().readDate(trip.data()['date']);
+          var myTrip = trip.data() as Map<String, dynamic>;
+          DateTime date = readDate(myTrip['date']);
           return date.isAfter(DateTime.now());
         }
-        ).map((doc) => Trip.fromJson(tripId,doc.data())).toList());
+        ).where((element) {
+          var elem = element.data() as Map<String, dynamic>;
+          return elem['uId'] == Provider.of<AppUser>(context, listen: false).uid;
+        }).map((doc) {
+          id = doc.id;
+          var docu = doc.data() as Map<String, dynamic>;
+          return Trip.fromJson(id,docu);
+        }).toList());
   }
 
 
@@ -91,24 +111,57 @@ class TripProvider with ChangeNotifier {
 
     };
   }
-  void updateActivityStatus(String tripId, String activityId) async {
+
+/*
+  void updateStatut(){
+    // Effectuez l'action de mise à jour ici
+    // Par exemple, mettez à jour le champ activitiesIdByStatut
+
+    Map<ActivityIdStatut, List<String>> updatedActivitiesIdByStatut = {
+      ActivityIdStatut.inProgress: ['nouvelles_id_activites'],
+      ActivityIdStatut.completed: activitiesIdByStatut[ActivityIdStatut.completed],
+      ActivityIdStatut.cancelled: activitiesIdByStatut[ActivityIdStatut.cancelled],
+    };
+
+    Firestore.instance
+        .collection('votre_collection')
+        .doc(documentId)
+        .update({'activitiesIdByStatut': updatedActivitiesIdByStatut});
+  }
+  }
+
+ */
+/*
+  void updateActivitySta(String tripId, String activityId){
+
+    TripCollection
+        .doc(tripId)
+        .update({'activitiesIdByStatut': updatedActivitiesIdByStatut});
+  }
+
+ */
+
+  // ignore: missing_return
+  Future<void> updateActivityStatus(String tripId, String activityId) async {
     DocumentSnapshot tripSnapshot = await TripCollection.doc(tripId).get();
-    Trip tripData = Trip.fromJson(tripId, tripSnapshot.data());
+    Trip tripData = Trip.fromJson(tripId, tripSnapshot.data() as Map<String, dynamic>);
     List<String> activitiesId = tripData.activitiesId;
     Map<ActivityIdStatut, dynamic> activitiesIdByStatut = tripData.activitiesIdByStatut;
 
-
-    int index = activitiesId.indexOf(activityId);
+    List<String> activitiesIdOngoing;
+    List<String> activitiesIdDone;
+        int index = activitiesId.indexOf(activityId);
     if(index != -1 ){
-      activitiesIdByStatut[ActivityIdStatut.onGoing].remove(activityId);
-      activitiesIdByStatut[ActivityIdStatut.onGoing].add(activityId);
+    activitiesIdByStatut[ActivityIdStatut.onGoing].remove(activityId);
+     activitiesIdByStatut[ActivityIdStatut.done].add(activityId);
+     notifyListeners();
     }
-    TripCollection.doc(id).update({"activitiesIdByStatut": {
-      ActivityIdStatut.done.toString():activitiesIdByStatut[ActivityIdStatut.done],
+ var value = await TripCollection.doc(tripId).update({"activitiesIdByStatut": {
+      ActivityIdStatut.done.toString(): activitiesIdByStatut[ActivityIdStatut.done],
       ActivityIdStatut.onGoing.toString(): activitiesIdByStatut[ActivityIdStatut.onGoing],
-    }});
-    notifyListeners();
-
+    }}).then((value) =>    notifyListeners());
+  notifyListeners();
+  return value;
   }
 
 /*

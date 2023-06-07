@@ -66,11 +66,11 @@ class _State extends State<TripsView> {
           appBar: AppBar(
             title: Text("Mes voyages"),
             bottom: TabBar(
-              labelColor: Colors.white70,
+              labelColor: Colors.white,
               labelStyle: TextStyle(fontSize: 18.0),
-              unselectedLabelColor: Colors.black,
+              unselectedLabelColor: Colors.white70,
               indicatorPadding: EdgeInsets.all(3.0),
-              indicatorColor: Colors.black45,
+              indicatorColor: Colors.white70,
               indicatorWeight: 5.0,
               tabs: <Widget>[
                 Tab(text: "A venir"),
@@ -79,19 +79,21 @@ class _State extends State<TripsView> {
           body: TabBarView(
             children: [
               StreamBuilder<List<Trip>>(
-                stream: Provider.of<TripProvider>(context).getFutureTrips(),
+                stream: Provider.of<TripProvider>(context, listen: false).getFutureTrips(context),
                 initialData: [],
-                builder: (BuildContext context,
+                builder: ( context,
                     AsyncSnapshot<List<Trip>> snapshot) {
 
               if(snapshot.connectionState == ConnectionState.waiting){
                 return Center(child: CircularProgressIndicator(),);
               }else if(snapshot.hasError){
-                throw snapshot.error;
+                final error = snapshot.error;
+                throw error !;
                 print(snapshot.error);
                 return Center(child: Text('some error encured'),);
               }else if (snapshot.hasData) {
-                return  TripList(trips: snapshot.data);
+                final trips = snapshot.data ?? [];
+                return  TripList(trips: trips);
               } else {
                 //print(trips.length);
                 return Center(child: CircularProgressIndicator(),);
@@ -100,18 +102,20 @@ class _State extends State<TripsView> {
               ),
 
               StreamBuilder<List<Trip>>(
-                stream: Provider.of<TripProvider>(context).getPastTrips(),
+                stream: Provider.of<TripProvider>(context).getPastTrips(context),
                 initialData: [],
                 builder: (BuildContext context,
                     AsyncSnapshot<List<Trip>> snapshot) {
                   if(snapshot.connectionState == ConnectionState.waiting){
                     return Center(child: CircularProgressIndicator(),);
                   }else if(snapshot.hasError){
-                    throw snapshot.error;
+                    final error = snapshot.error;
+                    throw error !;
                     print(snapshot.error);
                     return Center(child: Text('some error encured'),);
                   }else if (snapshot.hasData) {
-                    return  TripList(trips: snapshot.data);
+                    final trips = snapshot.data ?? [];
+                    return  TripList(trips: trips);
                   } else {
                     //print(trips.length);
                     return Center(child: CircularProgressIndicator(),);
