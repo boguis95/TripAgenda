@@ -6,7 +6,7 @@ const textInputDecoration = InputDecoration(
   filled: true,
   contentPadding: EdgeInsets.all(12.0),
   enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.lightGreen, width: 1.0)
+    borderSide: BorderSide(color: Color(0xFF26474E), width: 0.9)
   ),
   focusedBorder: OutlineInputBorder(
     borderSide: BorderSide(color: Colors.green, width: 1.0)

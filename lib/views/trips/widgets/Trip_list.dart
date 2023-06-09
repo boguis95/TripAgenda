@@ -33,19 +33,41 @@ class TripList extends StatelessWidget {
       itemCount: trips.length ,
       itemBuilder: (context, index){
        // City city = CityRepo().getCityByName(trips[index].city);
-        return ListTile(
+        return trips[index].date.isBefore(DateTime.now()) ? ListTile(
 
-          title: Text(trips[index].city),
-          subtitle: trips[index].date != null ? Text(DateFormat("d/M/y").format(trips[index].date)) : Text("date pas encore définie"),
+          title: Text(trips[index].city, style: TextStyle(color: Colors.grey),),
+          subtitle: trips[index].date != null ?
+          Text(DateFormat("d/M/y").format(trips[index].date),style: TextStyle(color: Colors.grey))
+              : Text("date pas encore définie"),
           onTap: () => {
            // Navigator.pushNamed(context, TripView.routeName, arguments: {"trip" : trips[index], "city": loadCity(trips[index].city)})
+          } ,
+          /*trailing: IconButton(
+            icon: Icon(Icons.info),
+          onPressed: ()async {
+              City city = await  loadCity(trips[index].city, context);
+              Navigator.pushNamed(context, TripView.routeName, arguments: {"trip" : trips[index], "city": city});
+          },)
+          ,
+           */
+        ) : ListTile(
+
+          title: Text(trips[index].city,),
+          subtitle: trips[index].date != null ?
+          Text(DateFormat("d/M/y").format(trips[index].date),)
+              : Text("date pas encore définie"),
+          onTap: ()async {
+            City city = await  loadCity(trips[index].city, context);
+            Navigator.pushNamed(context, TripView.routeName, arguments: {"trip" : trips[index], "city": city});
           } ,
           trailing: IconButton(
             icon: Icon(Icons.info),
           onPressed: ()async {
               City city = await  loadCity(trips[index].city, context);
               Navigator.pushNamed(context, TripView.routeName, arguments: {"trip" : trips[index], "city": city});
-          },),
+          },)
+          ,
+
         );
       },
     );

@@ -1,4 +1,4 @@
-package com.dn.triplan
+package com.diamnum.triplan
 
 import io.flutter.embedding.android.FlutterActivity
 

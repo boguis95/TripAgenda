@@ -50,6 +50,25 @@ class _TriPlanState extends State<TriPlan> {
   @override
   Widget build(BuildContext context) {
 
+    final Color primaryColor = Color(0xFF26474E);
+
+    MaterialColor primarySwatch = MaterialColor(
+      primaryColor.value,
+      <int, Color>{
+        50: primaryColor.withOpacity(0.1),
+        100: primaryColor.withOpacity(0.2),
+        200: primaryColor.withOpacity(0.3),
+        300: primaryColor.withOpacity(0.4),
+        400: primaryColor.withOpacity(0.5),
+        500: primaryColor.withOpacity(0.6),
+        600: primaryColor.withOpacity(0.7),
+        700: primaryColor.withOpacity(0.8),
+        800: primaryColor.withOpacity(0.9),
+        900: primaryColor.withOpacity(1.0),
+      },
+    );
+
+
     //Mutiprovider -> permet de brancher plusieurs providers
     //ChangeNotifierProvider -> permet de notifier aux widegt qui consomme la données une mise à jour de ladonnée pour qu'ils puissent rebuild
     //Vu qu'on utilise pas le context -> on peut directement utiliser le constructeur nommé ChangeNotifierProvider.value de ChangeNotifierProvider
@@ -71,7 +90,7 @@ class _TriPlanState extends State<TriPlan> {
         //ThemeData est un inheritWidget natif -> appliquer des crateistique à tout l'application
         theme: ThemeData(
           //primarySwatch -> permet d'appliquer aléatoirement des gradiants de la couleur à notre application
-            primarySwatch: Colors.lightGreen
+            primarySwatch: primarySwatch
         ),
         debugShowCheckedModeBanner: false,
         //On enveloppe notre Widget City() par l'inheritWidget DataWidget

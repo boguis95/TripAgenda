@@ -66,6 +66,7 @@ class _CityViewState extends State<CityView> {
   //List<Activity> activities;
   late Trip myTrip;
   late int index;
+  bool isDateSet = false;
   Map<ActivityIdStatut, List<String>> activityStatusMap = {
     ActivityIdStatut.onGoing: [],
     ActivityIdStatut.done: [],
@@ -240,6 +241,7 @@ class _CityViewState extends State<CityView> {
         .then((newDate) {
             setState(() {
               myTrip?.date = newDate!;
+              isDateSet = true;
             });
 
 
@@ -360,7 +362,7 @@ class _CityViewState extends State<CityView> {
               return widget.showContent(
               context: context,
               children: [
-    TripOverview(cityName : city.name, setDate: setDate, trip: myTrip, amount: getAmount(city, activities2)),
+    TripOverview(cityName : city.name, setDate: setDate, trip: myTrip, amount: getAmount(city, activities2), isDateSet: isDateSet),
     //on wrap le Gridview.builder() -> pour qu'il prenne tout l'espace restant disponible
     // -> sinon il va vouloir prendre tout l'espace du widget parent et proqué un bug
     Expanded(

@@ -1,30 +1,11 @@
-## Application qui permet de planifier un voyage
+L’application **Triplan** est une forme d’agenda digitale qui permet à l’utilisateur d’organiser ses voyages.
+. L’application va proposer une liste de villes (française dans une la version 1).
 
-#Notes
-- l'ajout d'une activité -> incréménte le prix total du voyage
-
-
-
-
-
-
-
-
-#Erreurs: 
-- ======== Exception caught by widgets library =======================================================
-  The following RangeError was thrown building:
-  RangeError (index): Invalid value: Not in inclusive range 0..3: 4
-
--> définir la propriété itemCount de ListView();
-
-
-
-#Notes présentation : 
-- chaque ville à ses propres activités -> possede une liste d'activités
-- A partir des activités sélectionnées dans une ville, on va organiser un voyage
-- parler des views , les widget et provider associés
-
-
-
-#A faire
--probleme de formatage de l'email pendant la connexion
+- L’utilisateur pourra donc choisir une ville
+- Dans chaque ville l’utilisateur aura la possibilité de choisir une liste 
+  d’activités touristiques, 
+  il pourra donc sélectionner les différentes activités qu’il souhaite réaliser
+  et de les sauvegarder pour créer un voyage qu’il souhaite faire.
+- L’utilisateur aura donc accès à l’ensemble des voyages planifiés
+  et les activités pour chaque voyage ainsi que le budget global 
+  des différentes activités et donc du voyage.

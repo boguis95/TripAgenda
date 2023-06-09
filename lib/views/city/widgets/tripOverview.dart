@@ -10,8 +10,10 @@ class TripOverview extends StatelessWidget {
   final Trip trip;
   final String cityName;
   final double amount;
+  final bool isDateSet;
 
-  const TripOverview({ required this.setDate, required this.trip, required this.cityName, required this.amount}) ;
+
+  const TripOverview({ required this.setDate, required this.trip, required this.cityName, required this.amount, required this.isDateSet}) ;
 
 
 
@@ -44,7 +46,7 @@ class TripOverview extends StatelessWidget {
                 Expanded(
                   child: Text(
                     //DateFormat() -> formater la date avec le modèle qu'on lui a fourni
-                    trip.date != null ? DateFormat("d/M/y").format(trip.date)
+                    isDateSet == true ? DateFormat("d/M/y").format(trip.date)
                         : "Choisissez une date",
                     style: TextStyle(
                         fontSize: 20.0
